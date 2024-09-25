@@ -9,15 +9,13 @@ import { User } from './entities/user.entity'
 export class UsersService {
 	constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-	// Create a new user
 	async create(createUserDto: CreateUserDto): Promise<User> {
-		const newUser = new this.userModel(createUserDto)
+		  const newUser = new this.userModel(createUserDto)
 		return newUser.save()
 	}
 
-	// Get all users
 	async findAll(): Promise<User[]> {
-		return this.userModel.find().exec()
+		   return this.userModel.find().exec()
 	}
 
 	// Get a user by ID
