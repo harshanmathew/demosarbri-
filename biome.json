@@ -41,7 +41,8 @@
 		"rules": {
 			"recommended": true,
 			"suspicious": {
-				"noThenProperty": "off"
+				"noThenProperty": "off",
+				"noExplicitAny": "off"
 			},
 			"style": {
 				"all": true,

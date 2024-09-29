@@ -18,7 +18,6 @@ export class UsersService {
 		return this.userModel.find().exec()
 	}
 
-	// Get a user by ID
 	async findOne(id: string): Promise<User> {
 		const user = await this.userModel.findById(id).exec()
 		if (!user) {
@@ -27,7 +26,6 @@ export class UsersService {
 		return user
 	}
 
-	// Update a user by ID
 	async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
 		const updatedUser = await this.userModel
 			.findByIdAndUpdate(id, updateUserDto, { new: true })
@@ -38,11 +36,18 @@ export class UsersService {
 		return updatedUser
 	}
 
-	// Remove a user by ID
 	async remove(id: string): Promise<void> {
 		const result = await this.userModel.findByIdAndDelete(id).exec()
 		if (!result) {
 			throw new NotFoundException(`User with ID ${id} not found`)
 		}
+	}
+
+	async findByAddress(address: string): Promise<User | null> {
+		const user = await this.userModel.findOne({ address }).exec()
+		if (!user) {
+			throw new NotFoundException(`User with address ${address} not found`)
+		}
+		return user
 	}
 }
