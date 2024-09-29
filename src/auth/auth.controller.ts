@@ -2,7 +2,7 @@ import { Body, Controller, Post } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger'
 import { AuthService } from './auth.service'
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
@@ -21,18 +21,13 @@ export class AuthController {
 				signature: {
 					type: 'string',
 					description: 'Signature',
-					example: '0xc68245bb...',
+					example:
+						'0xc68245bb2cf6993a3ee9d14f3ebeb25e28bf207b02ea53bae9d506bb9457634306027368eb9db7ad44bec38cf1516afecbe68c6165d9e87e20d4e0309d0d8e121b',
 				},
 				message: {
 					type: 'string',
 					description: 'Message that was signed',
 					example: 'Signing this message at : Wed Sep 25 2024',
-				},
-				referralCode: {
-					type: 'string',
-					description: 'Optional referral code',
-					example: 'REF123',
-					nullable: true,
 				},
 			},
 		},
@@ -41,8 +36,7 @@ export class AuthController {
 		@Body('address') address: `0x${string}`,
 		@Body('signature') signature: `0x${string}`,
 		@Body('message') message: string,
-		@Body('referralCode') referralCode?: string,
 	) {
-		return this.authService.login(address, signature, message, referralCode)
+		return this.authService.login(address, signature, message)
 	}
 }

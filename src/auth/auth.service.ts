@@ -51,12 +51,13 @@ export class AuthService {
 		address: `0x${string}`,
 		signature: `0x${string}`,
 		message: string,
-		referralCode?: string,
 	) {
 		try {
 			const isValid = await this.validateSignature(address, signature, message)
+			console.log('isValid', isValid)
 			if (isValid.result) {
 				let user = await this.usersService.findByAddress(address)
+				console.log('user', user)
 				if (!user) {
 					user = await this.usersService.create({
 						address,

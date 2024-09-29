@@ -46,7 +46,7 @@ export class UsersService {
 	async findByAddress(address: string): Promise<User | null> {
 		const user = await this.userModel.findOne({ address }).exec()
 		if (!user) {
-			throw new NotFoundException(`User with address ${address} not found`)
+			return null
 		}
 		return user
 	}
