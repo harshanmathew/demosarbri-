@@ -4,6 +4,7 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import { DatabaseModule } from './database/database.module'
+import { MongoExceptionFilter } from './filters/mongo-exception.filter'
 import { UsersModule } from './users/users.module'
 
 @Module({
@@ -16,6 +17,12 @@ import { UsersModule } from './users/users.module'
 		AuthModule,
 	],
 	controllers: [AppController],
-	providers: [AppService],
+	providers: [
+		AppService,
+		{
+			provide: 'APP_FILTER', // Register the filter globally in AppModule
+			useClass: MongoExceptionFilter,
+		},
+	],
 })
 export class AppModule {}
