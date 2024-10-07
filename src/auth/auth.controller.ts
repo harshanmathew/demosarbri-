@@ -27,7 +27,7 @@ export class AuthController {
 				message: {
 					type: 'string',
 					description: 'Message that was signed',
-					example: 'Signing this message at : Wed Sep 25 2024',
+					example: 'Signing this message at : <replace with timestamp>',
 				},
 			},
 		},

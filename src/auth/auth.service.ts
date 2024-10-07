@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { BadRequestException, Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { sha256base64 } from 'ohash'
 import { isEmpty } from 'radash'
@@ -48,6 +48,42 @@ export class AuthService {
 		return { result, addressFromSignature }
 	}
 
+	async validateTimeStamp(message: string): Promise<boolean> {
+		// Update regex to match ISO 8601 format, including the 'Z' at the end
+		const timestampRegex =
+			/Signing this message at : (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z)/
+		const match = message.match(timestampRegex)
+
+		if (!match || !match[1]) {
+			throw new BadRequestException(
+				'Invalid message format. Timestamp is missing or malformed.',
+			)
+		}
+
+		const timestampString = match[1]
+		const timestamp = new Date(timestampString)
+
+		// Check if the timestamp is within 15 minutes
+		const currentTime = new Date()
+		const timeDiffInMinutes =
+			(currentTime.getTime() - timestamp.getTime()) / (1000 * 60)
+
+		if (timeDiffInMinutes > 15) {
+			throw new BadRequestException(
+				'The message timestamp is older than 15 minutes.',
+			)
+		}
+
+		return true
+	}
+
+	/**
+	 * Handles user login via signature
+	 * @param address The Ethereum address signing the message
+	 * @param signature The signature of the message
+	 * @param message The message signed by the user
+	 * @returns An object with { accessToken, isValid } if the signature is valid, or { isValid, error, addressFromSignature } if the signature is invalid
+	 */
 	async login(
 		address: `0x${string}`,
 		signature: `0x${string}`,
@@ -55,7 +91,7 @@ export class AuthService {
 	) {
 		try {
 			const isValid = await this.validateSignature(address, signature, message)
-			console.log('isValid', isValid)
+			await this.validateTimeStamp(message)
 			if (isValid.result) {
 				let user = await this.usersService.findByAddress(address)
 				console.log('user', user)
