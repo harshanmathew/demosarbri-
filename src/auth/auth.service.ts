@@ -37,6 +37,7 @@ export class AuthService {
 			chain: polygon,
 			transport: http(),
 		})
+		//avoid this
 		const addressFromSignature = await this.getSigner(message, signature)
 		console.log('signature: ', addressFromSignature)
 		const result = await client.verifyMessage({
@@ -61,8 +62,6 @@ export class AuthService {
 				if (!user) {
 					user = await this.usersService.create({
 						address,
-						signature,
-						message,
 					})
 				}
 				const payload = {

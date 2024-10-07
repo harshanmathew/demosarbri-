@@ -3,9 +3,8 @@ import {
 	Controller,
 	Delete,
 	Get,
-	Param,
 	Patch,
-	Post,
+	Request,
 	UseGuards,
 } from '@nestjs/common'
 import {
@@ -15,63 +14,43 @@ import {
 	ApiTags,
 } from '@nestjs/swagger'
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard'
-import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { UsersService } from './users.service'
 
-@ApiTags('Users')
-@Controller('users')
-export class UsersController {
+@ApiTags('Me')
+@Controller('me')
+export class MeController {
 	constructor(private readonly usersService: UsersService) {}
 
-	@Post()
-	@ApiOperation({ summary: 'Create a new user' })
-	@ApiResponse({ status: 201, description: 'User created successfully.' })
-	@ApiResponse({ status: 400, description: 'Bad request.' })
-	create(@Body() createUserDto: CreateUserDto) {
-		return this.usersService.create(createUserDto)
-	}
-
 	@UseGuards(JwtAuthGuard)
-	@ApiBearerAuth() // This marks that this endpoint requires authentication (Bearer token)
+	@ApiBearerAuth()
 	@Get()
-	@ApiOperation({ summary: 'Get all users' })
-	@ApiResponse({ status: 200, description: 'Returns a list of users.' })
+	@ApiOperation({ summary: 'Get current user details' })
+	@ApiResponse({ status: 200, description: 'Returns the current user.' })
 	@ApiResponse({ status: 401, description: 'Unauthorized.' })
-	findAll() {
-		return this.usersService.findAll()
+	findMe(@Request() req: any) {
+		return this.usersService.findOne(req.user.id)
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()
-	@Get(':id')
-	@ApiOperation({ summary: 'Get a user by ID' })
-	@ApiResponse({ status: 200, description: 'Returns a user.' })
-	@ApiResponse({ status: 404, description: 'User not found.' })
-	@ApiResponse({ status: 401, description: 'Unauthorized.' })
-	findOne(@Param('id') id: string) {
-		return this.usersService.findOne(id)
-	}
-
-	@UseGuards(JwtAuthGuard)
-	@ApiBearerAuth()
-	@Patch(':id')
-	@ApiOperation({ summary: 'Update a user by ID' })
+	@Patch()
+	@ApiOperation({ summary: 'Update current user details' })
 	@ApiResponse({ status: 200, description: 'User updated successfully.' })
 	@ApiResponse({ status: 404, description: 'User not found.' })
 	@ApiResponse({ status: 401, description: 'Unauthorized.' })
-	update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-		return this.usersService.update(id, updateUserDto)
+	updateMe(@Request() req: any, @Body() updateUserDto: UpdateUserDto) {
+		return this.usersService.update(req.user.id, updateUserDto)
 	}
 
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()
-	@Delete(':id')
-	@ApiOperation({ summary: 'Delete a user by ID' })
+	@Delete()
+	@ApiOperation({ summary: 'Delete current user account' })
 	@ApiResponse({ status: 200, description: 'User deleted successfully.' })
 	@ApiResponse({ status: 404, description: 'User not found.' })
 	@ApiResponse({ status: 401, description: 'Unauthorized.' })
-	remove(@Param('id') id: string) {
-		return this.usersService.remove(id)
+	removeMe(@Request() req: any) {
+		return this.usersService.remove(req.user.id)
 	}
 }

@@ -6,16 +6,12 @@ export class CreateUserDto {
 	name?: string
 
 	@IsString()
+	@IsOptional()
+	username?: string
+
+	@IsString()
 	@IsNotEmpty()
 	address: string
-
-	@IsString()
-	@IsOptional()
-	message?: string
-
-	@IsString()
-	@IsOptional()
-	signature?: string
 
 	@IsUrl()
 	@IsOptional()
