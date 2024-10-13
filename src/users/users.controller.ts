@@ -1,12 +1,4 @@
-import {
-	Body,
-	Controller,
-	Delete,
-	Get,
-	Patch,
-	Request,
-	UseGuards,
-} from '@nestjs/common'
+import { Body, Controller, Delete, Get, Patch, UseGuards } from '@nestjs/common'
 import {
 	ApiBearerAuth,
 	ApiOperation,
@@ -15,6 +7,8 @@ import {
 } from '@nestjs/swagger'
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard'
 import { UpdateUserDto } from './dto/update-user.dto'
+import { User } from './schemas/user.schemas'
+import { UserInfo } from './user.decorator'
 import { UsersService } from './users.service'
 
 @ApiTags('Me')
@@ -28,8 +22,8 @@ export class MeController {
 	@ApiOperation({ summary: 'Get current user details' })
 	@ApiResponse({ status: 200, description: 'Returns the current user.' })
 	@ApiResponse({ status: 401, description: 'Unauthorized.' })
-	findMe(@Request() req: any) {
-		return this.usersService.findOne(req.user.id)
+	findMe(@UserInfo() user: User) {
+		return this.usersService.findOne(user.id)
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -39,8 +33,8 @@ export class MeController {
 	@ApiResponse({ status: 200, description: 'User updated successfully.' })
 	@ApiResponse({ status: 404, description: 'User not found.' })
 	@ApiResponse({ status: 401, description: 'Unauthorized.' })
-	updateMe(@Request() req: any, @Body() updateUserDto: UpdateUserDto) {
-		return this.usersService.update(req.user.id, updateUserDto)
+	updateMe(@UserInfo() user: User, @Body() updateUserDto: UpdateUserDto) {
+		return this.usersService.update(user.id, updateUserDto)
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -50,7 +44,7 @@ export class MeController {
 	@ApiResponse({ status: 200, description: 'User deleted successfully.' })
 	@ApiResponse({ status: 404, description: 'User not found.' })
 	@ApiResponse({ status: 401, description: 'Unauthorized.' })
-	removeMe(@Request() req: any) {
-		return this.usersService.remove(req.user.id)
+	removeMe(@UserInfo() user: User) {
+		return this.usersService.remove(user.id)
 	}
 }

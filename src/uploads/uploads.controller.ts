@@ -15,7 +15,6 @@ import {
 	ApiResponse,
 	ApiTags,
 } from '@nestjs/swagger'
-import { Express } from 'express'
 import { UTApi } from 'uploadthing/server'
 
 @ApiTags('Uploads')

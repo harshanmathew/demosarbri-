@@ -4,6 +4,7 @@ import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import { DatabaseModule } from './database/database.module'
 import { MongoExceptionFilter } from './filters/mongo-exception.filter'
+import { TokensModule } from './tokens/tokens.module'
 import { UploadsModule } from './uploads/uploads.module'
 import { UsersModule } from './users/users.module'
 
@@ -16,6 +17,7 @@ import { UsersModule } from './users/users.module'
 		UsersModule,
 		AuthModule,
 		UploadsModule,
+		TokensModule,
 	],
 	providers: [
 		AppService,
