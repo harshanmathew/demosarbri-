@@ -40,11 +40,6 @@ export class AuthService {
 			signature,
 			message,
 		})
-		console.log('🚀 ~ AuthService ~ ', {
-			address,
-			signature,
-			message,
-		})
 		return { result }
 	}
 
@@ -91,7 +86,6 @@ export class AuthService {
 	) {
 		try {
 			const isValid = await this.validateSignature(address, signature, message)
-			console.log('🚀 ~ AuthService ~ isValid:', isValid)
 			await this.validateTimeStamp(message)
 			if (isValid.result) {
 				let user = await this.usersService.findByAddress(address)
