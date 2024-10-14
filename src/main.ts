@@ -11,6 +11,9 @@ async function bootstrap() {
 	//MongoExceptionFilter globally
 	app.useGlobalFilters(new MongoExceptionFilter())
 
+	// Enable CORS for all origins
+	app.enableCors({ origin: '*' })
+
 	// Ensure the server is not already listening
 	if (app.getHttpServer().listening) {
 		console.warn('🚨 Server is already listening on the specified port.')

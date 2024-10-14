@@ -35,15 +35,17 @@ export class AuthService {
 			chain: polygon,
 			transport: http(),
 		})
-		//avoid this
-		const addressFromSignature = await this.getSigner(message, signature)
-		console.log('signature: ', addressFromSignature)
 		const result = await client.verifyMessage({
 			address,
 			signature,
 			message,
 		})
-		return { result, addressFromSignature }
+		console.log('🚀 ~ AuthService ~ ', {
+			address,
+			signature,
+			message,
+		})
+		return { result }
 	}
 
 	async validateTimeStamp(message: string): Promise<boolean> {
@@ -89,6 +91,7 @@ export class AuthService {
 	) {
 		try {
 			const isValid = await this.validateSignature(address, signature, message)
+			console.log('🚀 ~ AuthService ~ isValid:', isValid)
 			await this.validateTimeStamp(message)
 			if (isValid.result) {
 				let user = await this.usersService.findByAddress(address)
