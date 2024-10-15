@@ -1,6 +1,7 @@
 import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
+import { ScheduleModule } from '@nestjs/schedule'
 import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import { BullConfigService } from './bull-config.service'
@@ -18,12 +19,13 @@ import { WatcherModule } from './watcher/watcher.module'
 		BullModule.forRootAsync({
 			useClass: BullConfigService,
 		}),
+		ScheduleModule.forRoot(),
 		DatabaseModule,
 		UsersModule,
 		AuthModule,
 		UploadsModule,
 		TokensModule,
-		// WatcherModule,
+		WatcherModule,
 	],
 	providers: [
 		AppService,
