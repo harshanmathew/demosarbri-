@@ -20,7 +20,11 @@ export class MeController {
 	@ApiBearerAuth()
 	@Get()
 	@ApiOperation({ summary: 'Get current user details' })
-	@ApiResponse({ status: 200, description: 'Returns the current user.' })
+	@ApiResponse({
+		status: 200,
+		description: 'Returns the current user.',
+		type: User,
+	})
 	@ApiResponse({ status: 401, description: 'Unauthorized.' })
 	findMe(@UserInfo() user: User) {
 		return this.usersService.findOne(user.id)
@@ -30,7 +34,11 @@ export class MeController {
 	@ApiBearerAuth()
 	@Patch()
 	@ApiOperation({ summary: 'Update current user details' })
-	@ApiResponse({ status: 200, description: 'User updated successfully.' })
+	@ApiResponse({
+		status: 200,
+		description: 'User updated successfully.',
+		type: User,
+	})
 	@ApiResponse({ status: 404, description: 'User not found.' })
 	@ApiResponse({ status: 401, description: 'Unauthorized.' })
 	updateMe(@UserInfo() user: User, @Body() updateUserDto: UpdateUserDto) {
