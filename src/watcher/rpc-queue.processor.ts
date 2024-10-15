@@ -7,7 +7,7 @@ import { shibarium, shibariumTestnet } from 'viem/chains'
 
 @Processor('rpc-requests', {
 	limiter: {
-		max: 50,
+		max: 45,
 		duration: 1000,
 	},
 })
