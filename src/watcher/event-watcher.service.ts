@@ -4,31 +4,23 @@ import { ConfigService } from '@nestjs/config'
 import { InjectModel } from '@nestjs/mongoose'
 import { Queue, QueueEvents } from 'bullmq'
 import { Model } from 'mongoose'
+import { customSerializer } from 'src/utils/custom-serializer'
+import { EventTypeFromAbi, parseLogs } from 'src/utils/parse-logs'
+import { sharbiFunAbi } from 'src/utils/sharbi-fun.abi'
+import { Abi, ContractEventName, isAddressEqual } from 'viem'
+import { EventLogsDocument } from './schema/event-logs.schema'
 import { SyncDetailsDocument } from './schema/sync-details.schema'
-
-export const customSerializer = {
-	serialize: (data: any): string => {
-		return JSON.stringify(data, (_, value) =>
-			typeof value === 'bigint' ? value.toString() : value,
-		)
-	},
-	deserialize: (data: string): any => {
-		return JSON.parse(data, (_, value) => {
-			if (typeof value === 'string' && /^\d+n$/.test(value)) {
-				return BigInt(value.slice(0, -1))
-			}
-			return value
-		})
-	},
-}
 
 @Injectable()
 export class EventWatcherService implements OnModuleInit {
 	private queueEvents: QueueEvents
+
 	constructor(
 		@InjectModel('SyncDetails')
 		private readonly syncDetailsModel: Model<SyncDetailsDocument>,
 		@InjectQueue('rpc-requests') private readonly rpcRequestsQueue: Queue,
+		@InjectModel('EventLogs')
+		private readonly eventLogModel: Model<EventLogsDocument>,
 		private readonly configService: ConfigService,
 	) {
 		this.queueEvents = new QueueEvents('rpc-requests', {
@@ -45,32 +37,52 @@ export class EventWatcherService implements OnModuleInit {
 	}
 
 	async startWatching() {
+		console.log('Starting block watcher')
 		let lastProcessedBlock = await this.getLastProcessedBlock()
 
-		const currentBlock = Number(
-			await this.queueRpcRequest('getBlockNumber', []),
-		)
-		console.log(`Current block: ${currentBlock}`)
-		console.log(`Last processed block: ${lastProcessedBlock}`)
-		console.log(
-			`Current block - Last processed block: ${typeof lastProcessedBlock}`,
-		)
-
-		while (lastProcessedBlock < currentBlock) {
-			await this.processBlock(lastProcessedBlock + 1)
-			//await this.updateLastProcessedBlock(lastProcessedBlock + 1)
-			lastProcessedBlock++
+		const processBlocksUntil = async (targetBlock: number) => {
+			console.log('processBlocksUntil:', targetBlock)
+			while (lastProcessedBlock < targetBlock) {
+				console.log(`Processing block ${lastProcessedBlock + 1}`)
+				await this.processBlock(lastProcessedBlock + 1)
+				await this.updateLastProcessedBlock(lastProcessedBlock + 1)
+				lastProcessedBlock++
+			}
 		}
 
-		// // Set up a recurring job to check for new blocks
-		// setInterval(async () => {
-		// 	const newBlockNumber = await this.queueRpcRequest('getBlockNumber', [])
-		// 	if (newBlockNumber > lastProcessedBlock) {
-		// 		await this.processBlock(newBlockNumber)
-		// 		await this.updateLastProcessedBlock(newBlockNumber)
-		// 		lastProcessedBlock = newBlockNumber
-		// 	}
-		// }, 5000) // Check every 15 seconds
+		const checkAndProcessNewBlocks = async () => {
+			const currentBlock = Number(
+				await this.queueRpcRequest('getBlockNumber', []),
+			)
+
+			console.log('Current block:', currentBlock)
+
+			await processBlocksUntil(currentBlock - 2) // Process all blocks except the last 2 (to account for potential reorgs)
+		}
+
+		// Process all backlogged blocks
+		try {
+			await checkAndProcessNewBlocks()
+		} catch (e) {
+			console.log('Error:', e)
+		}
+
+		// Function to schedule the next check
+		const scheduleNextCheck = () => {
+			setTimeout(async () => {
+				try {
+					await checkAndProcessNewBlocks()
+				} catch (e) {
+					console.log('Error:', e)
+				}
+				scheduleNextCheck() // Schedule the next check after this one completes
+			}, 5000) // Wait 5 seconds before the next check
+		}
+
+		// Start the checking process
+		scheduleNextCheck()
+
+		console.log('Block watcher started. Now monitoring for new blocks.')
 	}
 
 	async processBlock(blockNumber: number) {
@@ -82,30 +94,35 @@ export class EventWatcherService implements OnModuleInit {
 				},
 			]),
 		)
-		// const filteredTxs = block.transactions.filter(
-		// 	tx => tx.to === this.contract.address,
-		// )
 
-		console.log('block', block.transactions)
+		const transactionHashes = block.transactions.map(tx => tx.hash)
+		const receipts = await Promise.all(
+			transactionHashes.map(hash =>
+				this.queueRpcRequest('getTransactionReceipt', [{ hash }]),
+			),
+		)
 
-		for (const tx of block.transactions) {
-			const receipt = customSerializer.deserialize(
-				await this.queueRpcRequest('getTransactionReceipt', [
-					{
-						hash: tx.hash,
-					},
-				]),
-			)
-			console.log('receipt', receipt)
-			// const transferEvents = receipt.logs
-			// 	.filter(log => log.address === this.contract.address)
-			// 	.map(log => this.contract.interface.parseLog(log))
-			// 	.filter(event => event.name === 'Transfer')
+		const allLogs = receipts.flatMap(
+			receipt => customSerializer.deserialize(receipt).logs || [],
+		)
 
-			// for (const event of transferEvents) {
-			// 	await this.storeTransferEvent(event, tx.hash, blockNumber)
-			// }
-		}
+		await this.saveEventsToDb(allLogs)
+	}
+
+	async saveEventsToDb(logs: any[]) {
+		const eventLogs = logs.map(log => ({
+			address: log.address,
+			topics: log.topics,
+			data: log.data,
+			blockNumber: Number(log.blockNumber),
+			transactionHash: log.transactionHash,
+			transactionIndex: log.transactionIndex,
+			blockHash: log.blockHash,
+			logIndex: log.logIndex,
+			removed: log.removed,
+		}))
+
+		await this.eventLogModel.insertMany(eventLogs)
 	}
 
 	async updateLastProcessedBlock(blockNumber: number) {
