@@ -33,7 +33,7 @@ export class EventWatcherService implements OnModuleInit {
 		})
 	}
 	async onModuleInit() {
-		//await this.startWatching()
+		await this.startWatching()
 	}
 
 	async startWatching() {
