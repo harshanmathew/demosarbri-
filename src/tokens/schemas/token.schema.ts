@@ -7,7 +7,6 @@ export type TokenDocument = Token & Document
 
 @Schema()
 export class Token {
-	@Prop({ type: Types.ObjectId, auto: true })
 	@ApiProperty({ type: String })
 	_id: Types.ObjectId
 
@@ -54,6 +53,10 @@ export class Token {
 	@Prop({ default: false })
 	@ApiProperty({ type: Boolean })
 	launched: boolean
+
+	@Prop({ enum: ['yes', 'no'] })
+	@ApiProperty({ enum: ['yes', 'no'] })
+	donate: 'yes' | 'no'
 
 	@Prop({ type: Types.ObjectId, ref: 'User' })
 	creator: User

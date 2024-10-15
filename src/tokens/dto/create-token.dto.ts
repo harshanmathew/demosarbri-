@@ -54,6 +54,11 @@ export class CreateTokenDto {
 	@IsOptional()
 	websiteLink?: string
 
+	@ApiPropertyOptional({ example: 'yes' })
+	@IsEnum(['yes', 'no'])
+	@IsOptional()
+	donate?: 'yes' | 'no'
+
 	@ApiPropertyOptional({ example: false })
 	@IsBoolean()
 	@IsOptional()
