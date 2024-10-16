@@ -35,16 +35,16 @@ export class EventProcessorService {
 					await this.handleSharbiFunEvent(sharbiFunEvent)
 				}
 			}
-			await this.eventLogsModel.findByIdAndUpdate(event._id, {
-				processed: true,
-				syncedAt: new Date(),
-			})
+			// await this.eventLogsModel.findByIdAndUpdate(event._id, {
+			// 	processed: true,
+			// 	syncedAt: new Date(),
+			// })
 		}
 	}
 
 	private handleSharbiFunEvent(event: EventTypeFromAbi<typeof sharbiFunAbi>) {
 		switch (event.eventName) {
-			case 'Buy':
+			case 'Launch':
 				console.log('Buy event')
 				// Handle Buy event
 				break
