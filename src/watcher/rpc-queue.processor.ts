@@ -5,6 +5,18 @@ import { customSerializer } from 'src/utils/custom-serializer'
 import { http, Chain, PublicClient, createPublicClient } from 'viem'
 import { shibarium, shibariumTestnet } from 'viem/chains'
 
+const RPC_API_KEY = [
+	'xZ7u0tWn6nakiH0bmDIyl4zRDNZzfxrXar3qTOpi',
+	'jRK8FEJoKm8QBSmkURK1K56ZcdzBz0Cx7eyQPl6g',
+	'SOcTlTr6t99BGEFT2ukVda9XlOgIjX787f7Vq7K5',
+	'yggXYuZfQJ2v1FNROXo4b66sxwZKKOCI3sFy2K5I',
+	'0BDXNcUajJ42QNAScNDZ1kmLM1gmb1C22s6KR3F2',
+	'isF0YD1gbZdQGdoirWF46Cs5icWN7jp14fqBlVbe',
+	'T5Rxu2Oat31gjBlTQk1nN2Uj3lfbYUxraRwq4IAZ',
+	'9iL3UFp77N9xMXUnlWY0y8w1xAPmLooy3K9fDkKv',
+	'RNl68kgSm77w0g81xWksgd8Mby0wWWdSnAOWRh10',
+	'C604435KCD4AaSuiM04ie1vVqxJvjLTm5IFE54z4',
+]
 @Processor('rpc-requests', {
 	limiter: {
 		max: 45,
@@ -28,6 +40,20 @@ export class RpcRequestProcessor extends WorkerHost {
 	}
 
 	async process(job: Job<{ method: string; params: any[] }>): Promise<any> {
+		// Temporary fix for the issue with the RPC rate limiter
+		const apiKey = RPC_API_KEY[Math.floor(Math.random() * RPC_API_KEY.length)]
+		let chain: Chain = shibariumTestnet
+		let rpcUrl = `https://api.shibrpc.com/puppynet/${apiKey}`
+		if (this.configService.get<string>('CHAIN') === 'mainnet') {
+			chain = shibarium
+			rpcUrl = `https://api.shibrpc.com/shibarium/${apiKey}`
+		}
+		this.client = createPublicClient({
+			chain,
+			transport: http(rpcUrl),
+		}) as any
+		// End of temporary fix
+
 		const { method, params } = job.data
 		if (!method || !params) {
 			throw new Error('Invalid job data: method or params is missing')
