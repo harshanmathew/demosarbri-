@@ -4,6 +4,13 @@ export const sharbiFunAbi = [
 	{ type: 'receive', stateMutability: 'payable' },
 	{
 		type: 'function',
+		name: 'BONDING_CURVE_DURATION',
+		inputs: [],
+		outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+		stateMutability: 'view',
+	},
+	{
+		type: 'function',
 		name: 'K',
 		inputs: [{ name: '', type: 'address', internalType: 'address' }],
 		outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
@@ -12,6 +19,13 @@ export const sharbiFunAbi = [
 	{
 		type: 'function',
 		name: 'MAX_TOTAL_SUPPLY',
+		inputs: [],
+		outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+		stateMutability: 'view',
+	},
+	{
+		type: 'function',
+		name: 'THRESHOLD_PERCENTAGE',
 		inputs: [],
 		outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
 		stateMutability: 'view',
@@ -83,7 +97,11 @@ export const sharbiFunAbi = [
 		type: 'function',
 		name: 'getOutEthAmount',
 		inputs: [
-			{ name: 'tokenAddress', type: 'address', internalType: 'address' },
+			{
+				name: 'tokenAddress',
+				type: 'address',
+				internalType: 'address',
+			},
 			{ name: 'tokenAmount', type: 'uint256', internalType: 'uint256' },
 		],
 		outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
@@ -93,13 +111,26 @@ export const sharbiFunAbi = [
 		type: 'function',
 		name: 'getOutTokenAmount',
 		inputs: [
-			{ name: 'tokenAddress', type: 'address', internalType: 'address' },
+			{
+				name: 'tokenAddress',
+				type: 'address',
+				internalType: 'address',
+			},
 			{ name: 'ethAmount', type: 'uint256', internalType: 'uint256' },
 		],
 		outputs: [
 			{ name: '', type: 'bool', internalType: 'bool' },
 			{ name: '', type: 'uint256', internalType: 'uint256' },
 		],
+		stateMutability: 'view',
+	},
+	{
+		type: 'function',
+		name: 'getRemainingBlocks',
+		inputs: [
+			{ name: 'tokenAddress', type: 'address', internalType: 'address' },
+		],
+		outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
 		stateMutability: 'view',
 	},
 	{
@@ -120,15 +151,45 @@ export const sharbiFunAbi = [
 	},
 	{
 		type: 'function',
+		name: 'handleTokenExpire',
+		inputs: [
+			{ name: 'tokenAddress', type: 'address', internalType: 'address' },
+		],
+		outputs: [],
+		stateMutability: 'nonpayable',
+	},
+	{
+		type: 'function',
 		name: 'initialize',
 		inputs: [
 			{ name: '_dexRouter', type: 'address', internalType: 'address' },
 			{ name: '_operator', type: 'address', internalType: 'address' },
 			{ name: '_feeTo', type: 'address', internalType: 'address' },
-			{ name: '_donationAddress', type: 'address', internalType: 'address' },
-			{ name: '_tradingFeeRate', type: 'uint256', internalType: 'uint256' },
-			{ name: '_graduateFeeRate', type: 'uint256', internalType: 'uint256' },
-			{ name: '_donationRate', type: 'uint256', internalType: 'uint256' },
+			{
+				name: '_donationAddress',
+				type: 'address',
+				internalType: 'address',
+			},
+			{
+				name: '_tradingFeeRate',
+				type: 'uint256',
+				internalType: 'uint256',
+			},
+			{
+				name: '_graduateFeeRate',
+				type: 'uint256',
+				internalType: 'uint256',
+			},
+			{
+				name: '_donationRate',
+				type: 'uint256',
+				internalType: 'uint256',
+			},
+			{
+				name: '_rewardsContract',
+				type: 'address',
+				internalType: 'address',
+			},
 		],
 		outputs: [],
 		stateMutability: 'nonpayable',
@@ -173,9 +234,20 @@ export const sharbiFunAbi = [
 	},
 	{
 		type: 'function',
+		name: 'rewardsContract',
+		inputs: [],
+		outputs: [{ name: '', type: 'address', internalType: 'address' }],
+		stateMutability: 'view',
+	},
+	{
+		type: 'function',
 		name: 'sell',
 		inputs: [
-			{ name: 'tokenAddress', type: 'address', internalType: 'address' },
+			{
+				name: 'tokenAddress',
+				type: 'address',
+				internalType: 'address',
+			},
 			{ name: 'amountIn', type: 'uint256', internalType: 'uint256' },
 			{ name: 'amountOutMin', type: 'uint256', internalType: 'uint256' },
 		],
@@ -199,7 +271,11 @@ export const sharbiFunAbi = [
 		type: 'function',
 		name: 'setDonationRate',
 		inputs: [
-			{ name: 'newDonationRate', type: 'uint256', internalType: 'uint256' },
+			{
+				name: 'newDonationRate',
+				type: 'uint256',
+				internalType: 'uint256',
+			},
 		],
 		outputs: [],
 		stateMutability: 'nonpayable',
@@ -233,6 +309,19 @@ export const sharbiFunAbi = [
 	},
 	{
 		type: 'function',
+		name: 'setRewardsContract',
+		inputs: [
+			{
+				name: 'newRewardsContract',
+				type: 'address',
+				internalType: 'address',
+			},
+		],
+		outputs: [],
+		stateMutability: 'nonpayable',
+	},
+	{
+		type: 'function',
 		name: 'setTradingFeeRate',
 		inputs: [{ name: 'newFeeRate', type: 'uint256', internalType: 'uint256' }],
 		outputs: [],
@@ -252,14 +341,33 @@ export const sharbiFunAbi = [
 		type: 'function',
 		name: 'swapAndBuy',
 		inputs: [
-			{ name: 'funTokenAddress', type: 'address', internalType: 'address' },
-			{ name: 'paymentToken', type: 'address', internalType: 'address' },
+			{
+				name: 'funTokenAddress',
+				type: 'address',
+				internalType: 'address',
+			},
+			{
+				name: 'paymentToken',
+				type: 'address',
+				internalType: 'address',
+			},
 			{ name: 'amountIn', type: 'uint256', internalType: 'uint256' },
 			{ name: 'minBoneOut', type: 'uint256', internalType: 'uint256' },
-			{ name: 'minFunTokenOut', type: 'uint256', internalType: 'uint256' },
+			{
+				name: 'minFunTokenOut',
+				type: 'uint256',
+				internalType: 'uint256',
+			},
 		],
 		outputs: [],
 		stateMutability: 'payable',
+	},
+	{
+		type: 'function',
+		name: 'tokenLaunchBlock',
+		inputs: [{ name: '', type: 'address', internalType: 'address' }],
+		outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+		stateMutability: 'view',
 	},
 	{
 		type: 'function',
@@ -270,10 +378,21 @@ export const sharbiFunAbi = [
 	},
 	{
 		type: 'function',
+		name: 'tokenRaisedAmount',
+		inputs: [{ name: '', type: 'address', internalType: 'address' }],
+		outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+		stateMutability: 'view',
+	},
+	{
+		type: 'function',
 		name: 'tokenStates',
 		inputs: [{ name: '', type: 'address', internalType: 'address' }],
 		outputs: [
-			{ name: '', type: 'uint8', internalType: 'enum SharbiFun.TokenState' },
+			{
+				name: '',
+				type: 'uint8',
+				internalType: 'enum SharbiFun.TokenState',
+			},
 		],
 		stateMutability: 'view',
 	},
@@ -391,6 +510,19 @@ export const sharbiFunAbi = [
 				type: 'uint256',
 				indexed: false,
 				internalType: 'uint256',
+			},
+		],
+		anonymous: false,
+	},
+	{
+		type: 'event',
+		name: 'Expired',
+		inputs: [
+			{
+				name: 'tokenAddress',
+				type: 'address',
+				indexed: true,
+				internalType: 'address',
 			},
 		],
 		anonymous: false,
@@ -612,6 +744,44 @@ export const sharbiFunAbi = [
 	},
 	{
 		type: 'event',
+		name: 'TokenFundsTransferredToRewards',
+		inputs: [
+			{
+				name: 'tokenAddress',
+				type: 'address',
+				indexed: true,
+				internalType: 'address',
+			},
+			{
+				name: 'amount',
+				type: 'uint256',
+				indexed: false,
+				internalType: 'uint256',
+			},
+		],
+		anonymous: false,
+	},
+	{
+		type: 'event',
+		name: 'TokenTimerExtended',
+		inputs: [
+			{
+				name: 'tokenAddress',
+				type: 'address',
+				indexed: true,
+				internalType: 'address',
+			},
+			{
+				name: 'newEndBlock',
+				type: 'uint256',
+				indexed: false,
+				internalType: 'uint256',
+			},
+		],
+		anonymous: false,
+	},
+	{
+		type: 'event',
 		name: 'WhitelistToken',
 		inputs: [
 			{
@@ -672,7 +842,11 @@ export const sharbiFunAbi = [
 		type: 'error',
 		name: 'InvalidTokenState',
 		inputs: [
-			{ name: 'tokenAddress', type: 'address', internalType: 'address' },
+			{
+				name: 'tokenAddress',
+				type: 'address',
+				internalType: 'address',
+			},
 			{
 				name: 'expectedState',
 				type: 'uint8',
@@ -699,6 +873,13 @@ export const sharbiFunAbi = [
 		inputs: [{ name: 'token', type: 'address', internalType: 'address' }],
 	},
 	{ type: 'error', name: 'SwapFailed', inputs: [] },
+	{
+		type: 'error',
+		name: 'TokenExpired',
+		inputs: [
+			{ name: 'tokenAddress', type: 'address', internalType: 'address' },
+		],
+	},
 	{
 		type: 'error',
 		name: 'TokenNotWhitelisted',
