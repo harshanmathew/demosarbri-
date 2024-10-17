@@ -6,6 +6,7 @@ import {
 	ApiResponse,
 	ApiTags,
 } from '@nestjs/swagger'
+import { getAddress } from 'viem'
 import { AuthService } from './auth.service'
 
 class LoginResponse {
@@ -38,6 +39,7 @@ export class AuthController {
 		@Body('signature') signature: `0x${string}`,
 		@Body('message') message: string,
 	) {
-		return this.authService.login(address, signature, message)
+		const stdAddress = getAddress(address)
+		return this.authService.login(stdAddress, signature, message)
 	}
 }

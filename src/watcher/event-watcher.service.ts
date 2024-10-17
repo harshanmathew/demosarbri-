@@ -7,7 +7,7 @@ import { Model } from 'mongoose'
 import { customSerializer } from 'src/utils/custom-serializer'
 import { EventTypeFromAbi, parseLogs } from 'src/utils/parse-logs'
 import { sharbiFunAbi } from 'src/utils/sharbi-fun.abi'
-import { Abi, ContractEventName, isAddressEqual } from 'viem'
+import { Abi, ContractEventName, getAddress, isAddressEqual } from 'viem'
 import { EventLogsDocument } from './schema/event-logs.schema'
 import { SyncDetailsDocument } from './schema/sync-details.schema'
 

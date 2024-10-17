@@ -25,7 +25,7 @@ import { WatcherModule } from './watcher/watcher.module'
 		AuthModule,
 		UploadsModule,
 		TokensModule,
-		// WatcherModule,
+		WatcherModule,
 	],
 	providers: [
 		AppService,
