@@ -20,6 +20,7 @@ export class TokensService {
 			...createTokenDto,
 			creator: user._id,
 			address: '0x0',
+			launched: false,
 		})
 		return createdToken.save()
 	}
