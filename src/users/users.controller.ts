@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Patch, UseGuards } from '@nestjs/common'
 import {
 	ApiBearerAuth,
+	ApiBody,
 	ApiOperation,
 	ApiResponse,
 	ApiTags,
@@ -30,17 +31,16 @@ export class MeController {
 		return this.usersService.findOne(user.id)
 	}
 
+	@Patch()
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()
-	@Patch()
 	@ApiOperation({ summary: 'Update current user details' })
 	@ApiResponse({
 		status: 200,
 		description: 'User updated successfully.',
 		type: User,
 	})
-	@ApiResponse({ status: 404, description: 'User not found.' })
-	@ApiResponse({ status: 401, description: 'Unauthorized.' })
+	@ApiBody({ type: UpdateUserDto })
 	updateMe(@UserInfo() user: User, @Body() updateUserDto: UpdateUserDto) {
 		return this.usersService.update(user.id, updateUserDto)
 	}
