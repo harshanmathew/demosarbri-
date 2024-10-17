@@ -22,6 +22,10 @@ export class CreateTokenDto {
 	@IsString()
 	description: string
 
+	@ApiProperty({ example: '0x0' })
+	@IsString()
+	transactionHash: string
+
 	@ApiProperty({ example: 'https://example.com/token-image.png' })
 	@IsString()
 	image: string

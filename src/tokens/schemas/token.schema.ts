@@ -20,6 +20,10 @@ export class Token {
 
 	@Prop({ required: true })
 	@ApiProperty({ type: String })
+	address: string
+
+	@Prop({ required: true })
+	@ApiProperty({ type: String })
 	description: string
 
 	@Prop({ required: true })
@@ -60,6 +64,10 @@ export class Token {
 
 	@Prop({ type: Types.ObjectId, ref: 'User' })
 	creator: User
+
+	@Prop({ required: true })
+	@ApiProperty({ type: String })
+	transactionHash: string
 }
 
 export const TokenSchema = SchemaFactory.createForClass(Token)

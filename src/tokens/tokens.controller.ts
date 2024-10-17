@@ -36,8 +36,6 @@ export class TokensController {
 		description: 'The token has been successfully created.',
 		type: Token,
 	})
-	@ApiResponse({ status: 400, description: 'Bad Request.' })
-	@ApiResponse({ status: 401, description: 'Unauthorized.' })
 	create(@Body() createTokenDto: CreateTokenDto, @UserInfo() user: User) {
 		return this.tokensService.create(createTokenDto, user)
 	}
