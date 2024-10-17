@@ -62,9 +62,4 @@ export class CreateTokenDto {
 	@IsEnum(['yes', 'no'])
 	@IsOptional()
 	donate?: 'yes' | 'no'
-
-	@ApiPropertyOptional({ example: false })
-	@IsBoolean()
-	@IsOptional()
-	launched?: boolean
 }
