@@ -7,8 +7,11 @@ import { EventTypeFromAbi, LogsType, parseLog } from 'src/utils/parse-logs'
 import { sharbiFunAbi } from 'src/utils/sharbi-fun.abi'
 import { isAddress, isAddressEqual } from 'viem'
 import { EventLogsDocument } from './schema/event-logs.schema'
+
+type SharbiFunEventType = EventTypeFromAbi<typeof sharbiFunAbi>
 @Injectable()
 export class EventProcessorService {
+	private isProcessing = false
 	constructor(
 		@InjectModel('EventLogs') private eventLogsModel: Model<EventLogsDocument>,
 		private readonly configService: ConfigService,
@@ -16,6 +19,21 @@ export class EventProcessorService {
 
 	@Cron(CronExpression.EVERY_5_SECONDS)
 	async processEvents() {
+		if (this.isProcessing) {
+			console.log('Already processing events')
+			return
+		}
+		this.isProcessing = true
+		try {
+			await this.processUnprocessedEvents()
+		} catch (error) {
+			console.error('Error processing events:', error)
+		} finally {
+			this.isProcessing = false
+		}
+	}
+
+	private async processUnprocessedEvents() {
 		const unprocessedEvents = await this.eventLogsModel
 			.find({ processed: false })
 			.sort({ blockNumber: 1, logIndex: 1 })
@@ -35,6 +53,7 @@ export class EventProcessorService {
 					await this.handleSharbiFunEvent(sharbiFunEvent)
 				}
 			}
+
 			// await this.eventLogsModel.findByIdAndUpdate(event._id, {
 			// 	processed: true,
 			// 	syncedAt: new Date(),
@@ -42,16 +61,18 @@ export class EventProcessorService {
 		}
 	}
 
-	private handleSharbiFunEvent(event: EventTypeFromAbi<typeof sharbiFunAbi>) {
-		switch (event.eventName) {
-			case 'Launch':
-				console.log('Buy event')
-				// Handle Buy event
-				break
-			default: {
-				console.log(`Unhandled event type: ${event.eventName}`)
-			}
+	private handleSharbiFunEvent(event: SharbiFunEventType) {
+		if (this[`handle${event.eventName}SharbiFunEvent`]) {
+			this[`handle${event.eventName}SharbiFunEvent`](event)
+		} else {
+			console.log(`Unhandled event type: ${event.eventName}`)
 		}
+	}
+
+	private async handleLaunchSharbiFunEvent(
+		event: Extract<SharbiFunEventType, { eventName: 'Launch' }>,
+	) {
+		console.log('Launch event:', event)
 	}
 
 	@Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
