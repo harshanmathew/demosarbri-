@@ -48,4 +48,8 @@ export class TokensService {
 		await this.tokenModel.findByIdAndUpdate(token._id, { launched: true })
 		return token
 	}
+
+	async findAllLaunched(): Promise<Token[]> {
+		return this.tokenModel.find({ launched: true }).exec()
+	}
 }

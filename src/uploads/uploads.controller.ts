@@ -15,10 +15,12 @@ import {
 	ApiResponse,
 	ApiTags,
 } from '@nestjs/swagger'
+import { Auth } from 'src/auth/auth.decorator'
 import { UTApi } from 'uploadthing/server'
 
 @ApiTags('Uploads')
 @Controller('uploads')
+@Auth()
 export class UploadsController {
 	private utapi: UTApi
 

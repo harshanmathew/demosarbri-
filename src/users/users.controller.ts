@@ -6,6 +6,7 @@ import {
 	ApiResponse,
 	ApiTags,
 } from '@nestjs/swagger'
+import { Auth } from 'src/auth/auth.decorator'
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { User } from './schemas/user.schemas'
@@ -17,8 +18,7 @@ import { UsersService } from './users.service'
 export class MeController {
 	constructor(private readonly usersService: UsersService) {}
 
-	@UseGuards(JwtAuthGuard)
-	@ApiBearerAuth()
+	@Auth()
 	@Get()
 	@ApiOperation({ summary: 'Get current user details' })
 	@ApiResponse({
@@ -31,9 +31,8 @@ export class MeController {
 		return this.usersService.findOne(user.id)
 	}
 
+	@Auth()
 	@Patch()
-	@UseGuards(JwtAuthGuard)
-	@ApiBearerAuth()
 	@ApiOperation({ summary: 'Update current user details' })
 	@ApiResponse({
 		status: 200,
@@ -45,8 +44,7 @@ export class MeController {
 		return this.usersService.update(user.id, updateUserDto)
 	}
 
-	@UseGuards(JwtAuthGuard)
-	@ApiBearerAuth()
+	@Auth()
 	@Delete()
 	@ApiOperation({ summary: 'Delete current user account' })
 	@ApiResponse({ status: 200, description: 'User deleted successfully.' })
