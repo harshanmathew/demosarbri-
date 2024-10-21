@@ -97,6 +97,10 @@ export class Token {
 	@ApiProperty({ type: String })
 	virtualX: string
 
+	@Prop({ required: false })
+	@ApiProperty({ type: String })
+	pairAddress: string
+
 	@Prop({ default: false })
 	@ApiProperty({ type: Boolean })
 	launched: boolean

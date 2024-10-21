@@ -378,6 +378,23 @@ export class EventProcessorService {
 		}
 	}
 
+	private async handleGraduateSharbiFunEvent(
+		event: EventLogsDocument,
+		eventData: Extract<SharbiFunEventType, { eventName: 'Graduate' }>,
+	) {
+		const token = await this.tokenModel.findOne({
+			address: getAddress(eventData.args.tokenAddress),
+			launched: true,
+			graduated: false,
+		})
+
+		if (token) {
+			token.graduated = true
+			token.pairAddress = getAddress(eventData.args.pairAddress)
+			await token.save()
+		}
+	}
+
 	@Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
 	async cleanupSyncedEvents() {
 		const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
