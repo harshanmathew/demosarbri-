@@ -68,6 +68,38 @@ export class Token {
 	@Prop({ required: true, lowercase: true })
 	@ApiProperty({ type: String })
 	transactionHash: string
+
+	@Prop({ required: false })
+	@ApiProperty({ type: String })
+	marketCapInBoneBig: string
+
+	@Prop({ required: false })
+	@ApiProperty({ type: Number })
+	marketCapInBone: number
+
+	@Prop({ required: false })
+	@ApiProperty({ type: String })
+	totalRaisedInBoneBig: string
+
+	@Prop({ required: false })
+	@ApiProperty({ type: Number })
+	totalRaisedInBone: number
+
+	@Prop({ required: false })
+	@ApiProperty({ type: String })
+	tokenPriceInBoneBig: string
+
+	@Prop({ required: false })
+	@ApiProperty({ type: Number })
+	tokenPriceInBone: number
+
+	@Prop({ required: false })
+	@ApiProperty({ type: String })
+	virtualY: string
+
+	@Prop({ required: false })
+	@ApiProperty({ type: String })
+	virtualX: string
 }
 
 export const TokenSchema = SchemaFactory.createForClass(Token)

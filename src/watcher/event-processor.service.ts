@@ -105,6 +105,28 @@ export class EventProcessorService {
 		token.tokenSupply = eventData.args.totalSupply.toString()
 		token.bondingCurve = eventData.args.curveSize === 0 ? 'beginner' : 'pro'
 		token.donate = 'no'
+		token.totalRaisedInBone = 0
+		token.totalRaisedInBoneBig = '0'
+
+		let virtualY = BigInt(0)
+		const virtualX =
+			(eventData.args.totalSupply * BigInt(11000)) / BigInt(10000)
+
+		if (eventData.args.curveSize === 0) {
+			virtualY = BigInt(700000000) * BigInt(10) ** BigInt(12)
+		} else {
+			virtualY = BigInt(3000000000) * BigInt(10) ** BigInt(12)
+		}
+		token.virtualY = virtualY.toString()
+		token.virtualX = virtualX.toString()
+		const tokenPrice = virtualY / virtualX
+		const marketCap =
+			(tokenPrice * eventData.args.totalSupply) / BigInt(10 ** 18)
+
+		token.tokenPriceInBoneBig = tokenPrice.toString()
+		token.tokenPriceInBone = Number(Number(tokenPrice).toFixed(2))
+		token.marketCapInBoneBig = marketCap.toString()
+		token.marketCapInBone = Number(Number(marketCap).toFixed(2))
 
 		await token.save()
 	}
@@ -119,6 +141,80 @@ export class EventProcessorService {
 
 		if (token) {
 			token.donate = 'yes'
+			await token.save()
+		}
+	}
+
+	private async handleBuySharbiFunEvent(
+		event: EventLogsDocument,
+		eventData: Extract<SharbiFunEventType, { eventName: 'Buy' }>,
+	) {
+		const token = await this.tokenModel.findOne({
+			address: getAddress(eventData.args.tokenAddress),
+		})
+
+		if (token) {
+			token.totalRaisedInBoneBig = (
+				BigInt(token.totalRaisedInBoneBig) + BigInt(eventData.args.ethAmountIn)
+			).toString()
+			token.totalRaisedInBone = Number(
+				Number(BigInt(token.totalRaisedInBoneBig) / BigInt(10 ** 12)).toFixed(
+					2,
+				),
+			)
+			const newVirtualY =
+				BigInt(token.virtualY) + BigInt(eventData.args.ethAmountIn)
+			const newVirtualX =
+				BigInt(token.virtualX) - BigInt(eventData.args.tokenAmountOut)
+			token.virtualY = newVirtualY.toString()
+			token.virtualX = newVirtualX.toString()
+
+			const newTokenPrice = newVirtualY / newVirtualX
+			token.tokenPriceInBoneBig = newTokenPrice.toString()
+			token.tokenPriceInBone = Number(Number(newTokenPrice).toFixed(2))
+
+			const newMarketCap =
+				(newTokenPrice * BigInt(token.tokenSupply)) / BigInt(10 ** 18)
+			token.marketCapInBoneBig = newMarketCap.toString()
+			token.marketCapInBone = Number(Number(newMarketCap).toFixed(2))
+
+			await token.save()
+		}
+	}
+
+	private async handleSellSharbiFunEvent(
+		event: EventLogsDocument,
+		eventData: Extract<SharbiFunEventType, { eventName: 'Sell' }>,
+	) {
+		const token = await this.tokenModel.findOne({
+			address: getAddress(eventData.args.tokenAddress),
+		})
+
+		if (token) {
+			token.totalRaisedInBoneBig = (
+				BigInt(token.totalRaisedInBoneBig) - BigInt(eventData.args.ethAmountOut)
+			).toString()
+			token.totalRaisedInBone = Number(
+				Number(BigInt(token.totalRaisedInBoneBig) / BigInt(10 ** 12)).toFixed(
+					2,
+				),
+			)
+			const newVirtualY =
+				BigInt(token.virtualY) - BigInt(eventData.args.ethAmountOut)
+			const newVirtualX =
+				BigInt(token.virtualX) + BigInt(eventData.args.tokenAmountIn)
+			token.virtualY = newVirtualY.toString()
+			token.virtualX = newVirtualX.toString()
+
+			const newTokenPrice = newVirtualY / newVirtualX
+			token.tokenPriceInBoneBig = newTokenPrice.toString()
+			token.tokenPriceInBone = Number(Number(newTokenPrice).toFixed(2))
+
+			const newMarketCap =
+				(newTokenPrice * BigInt(token.tokenSupply)) / BigInt(10 ** 18)
+			token.marketCapInBoneBig = newMarketCap.toString()
+			token.marketCapInBone = Number(Number(newMarketCap).toFixed(2))
+
 			await token.save()
 		}
 	}
