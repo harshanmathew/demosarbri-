@@ -20,7 +20,17 @@ import { UserDocument } from 'src/users/schemas/user.schemas'
 import { UsersService } from 'src/users/users.service'
 import { EventTypeFromAbi, LogsType, parseLog } from 'src/utils/parse-logs'
 import { sharbiFunAbi } from 'src/utils/sharbi-fun.abi'
-import { getAddress, isAddress, isAddressEqual } from 'viem'
+import {
+	http,
+	Chain,
+	createWalletClient,
+	getAddress,
+	isAddress,
+	isAddressEqual,
+	publicActions,
+} from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+import { shibarium, shibariumTestnet } from 'viem/chains'
 import { EventLogs, EventLogsDocument } from './schema/event-logs.schema'
 
 type SharbiFunEventType = EventTypeFromAbi<typeof sharbiFunAbi>
@@ -332,6 +342,39 @@ export class EventProcessorService {
 				balance: type === 'buy' ? tokenAmount.toString() : '0',
 			})
 			await newTokenHolders.save()
+		}
+	}
+
+	private async handleCompleteSharbiFunEvent(
+		event: EventLogsDocument,
+		eventData: Extract<SharbiFunEventType, { eventName: 'Complete' }>,
+	) {
+		const token = await this.tokenModel.findOne({
+			address: getAddress(eventData.args.tokenAddress),
+			launched: true,
+			graduated: false,
+		})
+
+		if (token) {
+			let chain: Chain = shibariumTestnet
+			if (this.configService.get<string>('CHAIN') === 'mainnet') {
+				chain = shibarium
+			}
+			const account = privateKeyToAccount(
+				this.configService.get<`0x${string}`>('PRIVATE_KEY'),
+			)
+			const client = createWalletClient({
+				account,
+				chain,
+				transport: http(this.configService.get<string>('RPC_URL')),
+			}).extend(publicActions)
+			const { request } = await client.simulateContract({
+				abi: sharbiFunAbi,
+				address: this.configService.get<`0x${string}`>('SHARBI_FUN_ADDRESS'),
+				functionName: 'graduate',
+				args: [token.address as `0x${string}`],
+			})
+			await client.writeContract(request)
 		}
 	}
 
