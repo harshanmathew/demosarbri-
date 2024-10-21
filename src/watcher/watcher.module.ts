@@ -2,6 +2,10 @@ import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { MongooseModule } from '@nestjs/mongoose'
+import { Token, TokenSchema } from 'src/tokens/schemas/token.schema'
+import { User, UserSchema } from 'src/users/schemas/user.schemas'
+import { UsersModule } from 'src/users/users.module'
+import { UsersService } from 'src/users/users.service'
 import { EventProcessorService } from './event-processor.service'
 import { EventWatcherService } from './event-watcher.service'
 import { RpcRequestProcessor } from './rpc-queue.processor'
@@ -25,7 +29,9 @@ import { SyncDetails, SyncDetailsSchema } from './schema/sync-details.schema'
 		MongooseModule.forFeature([
 			{ name: SyncDetails.name, schema: SyncDetailsSchema },
 			{ name: EventLogs.name, schema: EventLogsSchema },
+			{ name: Token.name, schema: TokenSchema },
 		]),
+		UsersModule,
 	],
 	providers: [RpcRequestProcessor, EventWatcherService, EventProcessorService],
 	controllers: [],

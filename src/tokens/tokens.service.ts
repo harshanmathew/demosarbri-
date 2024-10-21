@@ -19,7 +19,6 @@ export class TokensService {
 		const createdToken = new this.tokenModel({
 			...createTokenDto,
 			creator: user._id,
-			address: '0x0',
 			launched: false,
 		})
 		return createdToken.save()

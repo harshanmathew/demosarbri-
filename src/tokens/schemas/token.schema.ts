@@ -18,21 +18,21 @@ export class Token {
 	@ApiProperty({ type: String })
 	ticker: string
 
-	@Prop({ required: true })
+	@Prop({ required: false, unique: true, sparse: true })
 	@ApiProperty({ type: String })
 	address: string
 
-	@Prop({ required: true })
+	@Prop({ required: false })
 	@ApiProperty({ type: String })
 	description: string
 
-	@Prop({ required: true })
+	@Prop({ required: false })
 	@ApiProperty({ type: String })
 	image: string
 
 	@Prop({ required: true })
-	@ApiProperty({ type: Number })
-	tokenSupply: number
+	@ApiProperty({ type: String })
+	tokenSupply: string
 
 	@Prop({ required: false })
 	@ApiProperty({ type: Number })
@@ -65,7 +65,7 @@ export class Token {
 	@Prop({ type: Types.ObjectId, ref: 'User' })
 	creator: User
 
-	@Prop({ required: true })
+	@Prop({ required: true, lowercase: true })
 	@ApiProperty({ type: String })
 	transactionHash: string
 }

@@ -18,6 +18,10 @@ export class User extends Document {
 
 	@Prop({ required: true, unique: true })
 	@ApiProperty({ type: String })
+	usernameLower: string
+
+	@Prop({ required: true, unique: true })
+	@ApiProperty({ type: String })
 	address: string
 
 	@Prop({ required: false })

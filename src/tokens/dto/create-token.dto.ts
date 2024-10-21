@@ -30,9 +30,9 @@ export class CreateTokenDto {
 	@IsString()
 	image: string
 
-	@ApiProperty({ example: 1000000 })
+	@ApiProperty({ example: '1000000' })
 	@IsNumber()
-	tokenSupply: number
+	tokenSupply: string
 
 	@ApiPropertyOptional({ example: 1000 })
 	@IsNumber()
