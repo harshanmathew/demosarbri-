@@ -12,7 +12,7 @@ export class User extends Document {
 	@ApiProperty({ type: String })
 	name?: string
 
-	@Prop({ required: false, unique: true })
+	@Prop({ required: false })
 	@ApiProperty({ type: String })
 	username?: string
 
@@ -28,3 +28,6 @@ export class User extends Document {
 export type UserDocument = User & Document
 
 export const UserSchema = SchemaFactory.createForClass(User)
+
+// Add a custom index for the username field
+UserSchema.index({ username: 1 }, { unique: true, sparse: true })
