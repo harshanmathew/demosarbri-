@@ -3,7 +3,19 @@ import { ConfigService } from '@nestjs/config'
 import { InjectModel } from '@nestjs/mongoose'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import { Model } from 'mongoose'
+import {
+	TokenHolders,
+	TokenHoldersDocument,
+} from 'src/tokens/schemas/token-holders.schema'
+import {
+	TokenTrades,
+	TokenTradesDocument,
+} from 'src/tokens/schemas/token-trade.schema'
 import { Token, TokenDocument } from 'src/tokens/schemas/token.schema'
+import {
+	UserActivity,
+	UserActivityDocument,
+} from 'src/users/schemas/user-activity.schema'
 import { UserDocument } from 'src/users/schemas/user.schemas'
 import { UsersService } from 'src/users/users.service'
 import { EventTypeFromAbi, LogsType, parseLog } from 'src/utils/parse-logs'
@@ -19,6 +31,12 @@ export class EventProcessorService {
 		@InjectModel(EventLogs.name)
 		private eventLogsModel: Model<EventLogsDocument>,
 		@InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
+		@InjectModel(TokenHolders.name)
+		private tokenHoldersModel: Model<TokenHoldersDocument>,
+		@InjectModel(TokenTrades.name)
+		private tokenTradesModel: Model<TokenTradesDocument>,
+		@InjectModel(UserActivity.name)
+		private userActivityModel: Model<UserActivityDocument>,
 		private usersService: UsersService,
 		private readonly configService: ConfigService,
 	) {}
@@ -60,10 +78,10 @@ export class EventProcessorService {
 				}
 			}
 
-			// await this.eventLogsModel.findByIdAndUpdate(event._id, {
-			// 	processed: true,
-			// 	syncedAt: new Date(),
-			// })
+			await this.eventLogsModel.findByIdAndUpdate(event._id, {
+				processed: true,
+				syncedAt: new Date(),
+			})
 		}
 	}
 
@@ -129,6 +147,18 @@ export class EventProcessorService {
 		token.marketCapInBone = Number(Number(marketCap).toFixed(2))
 
 		await token.save()
+
+		const userActivity = new this.userActivityModel({
+			user: creator._id,
+			type: 'created',
+			boneAmount: 0,
+			tokenAmount: Number(
+				Number(eventData.args.totalSupply / BigInt(10 ** 18)).toFixed(2),
+			),
+			token: token._id,
+			timestamp: event.timestamp,
+		})
+		await userActivity.save()
 	}
 
 	private async handleDonationSharbiFunEvent(
@@ -137,6 +167,7 @@ export class EventProcessorService {
 	) {
 		const token = await this.tokenModel.findOne({
 			address: getAddress(eventData.args.tokenAddress),
+			launched: true,
 		})
 
 		if (token) {
@@ -151,6 +182,7 @@ export class EventProcessorService {
 	) {
 		const token = await this.tokenModel.findOne({
 			address: getAddress(eventData.args.tokenAddress),
+			launched: true,
 		})
 
 		if (token) {
@@ -179,6 +211,16 @@ export class EventProcessorService {
 			token.marketCapInBone = Number(Number(newMarketCap).toFixed(2))
 
 			await token.save()
+
+			await this.handleTrades(
+				getAddress(token.address),
+				getAddress(eventData.args.buyer),
+				eventData.args.ethAmountIn,
+				eventData.args.tokenAmountOut,
+				'buy',
+				event.timestamp,
+				event.transactionHash,
+			)
 		}
 	}
 
@@ -188,6 +230,7 @@ export class EventProcessorService {
 	) {
 		const token = await this.tokenModel.findOne({
 			address: getAddress(eventData.args.tokenAddress),
+			launched: true,
 		})
 
 		if (token) {
@@ -216,6 +259,79 @@ export class EventProcessorService {
 			token.marketCapInBone = Number(Number(newMarketCap).toFixed(2))
 
 			await token.save()
+
+			await this.handleTrades(
+				getAddress(token.address),
+				getAddress(eventData.args.seller),
+				eventData.args.ethAmountOut,
+				eventData.args.tokenAmountIn,
+				'sell',
+				event.timestamp,
+				event.transactionHash,
+			)
+		}
+	}
+
+	private async handleTrades(
+		tokenAddress: `0x${string}`,
+		trader: `0x${string}`,
+		boneAmount: bigint,
+		tokenAmount: bigint,
+		type: 'buy' | 'sell',
+		timestamp: Date,
+		txHash: string,
+	) {
+		const token = await this.tokenModel.findOne({ address: tokenAddress })
+		const user = await this.createUserIfNotExists(trader)
+
+		const tokenTrade = new this.tokenTradesModel({
+			token: token._id,
+			trader: user._id,
+			boneAmount: Number(boneAmount / BigInt(10 ** 12)).toFixed(2),
+			tokenAmount: Number(tokenAmount / BigInt(10 ** 18)).toFixed(2),
+			type,
+			timestamp,
+			txHash,
+		})
+		await tokenTrade.save()
+
+		const userActivity = new this.userActivityModel({
+			user: user._id,
+			type,
+			boneAmount: Number(boneAmount / BigInt(10 ** 12)).toFixed(2),
+			tokenAmount: Number(tokenAmount / BigInt(10 ** 18)).toFixed(2),
+			token: token._id,
+			timestamp,
+		})
+		await userActivity.save()
+
+		const tokenHolders = await this.tokenHoldersModel.findOne({
+			token: token._id,
+			user: user._id,
+		})
+
+		if (tokenHolders) {
+			if (type === 'buy') {
+				tokenHolders.balance = (
+					BigInt(tokenHolders.balance) + tokenAmount
+				).toString()
+			} else {
+				tokenHolders.balance = (
+					BigInt(tokenHolders.balance) - tokenAmount
+				).toString()
+			}
+			if (BigInt(tokenHolders.balance) < BigInt(0)) {
+				tokenHolders.balance = BigInt(0).toString()
+			}
+
+			await tokenHolders.save()
+		} else {
+			const newTokenHolders = new this.tokenHoldersModel({
+				token: token._id,
+				user: user._id,
+				balance: type === 'buy' ? tokenAmount.toString() : '0',
+			})
+			await newTokenHolders.save()
 		}
 	}
 

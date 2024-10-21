@@ -35,6 +35,9 @@ export class EventLogs {
 	@Prop({ required: true, default: false })
 	processed: boolean
 
+	@Prop({ required: true, default: Date.now })
+	timestamp: Date
+
 	@Prop({ required: false })
 	syncedAt: Date
 }

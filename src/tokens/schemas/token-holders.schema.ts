@@ -3,6 +3,8 @@ import { Document, Types } from 'mongoose'
 import { User } from 'src/users/schemas/user.schemas'
 import type { Token } from './token.schema'
 
+export type TokenHoldersDocument = TokenHolders & Document
+
 @Schema({ timestamps: true })
 export class TokenHolders extends Document {
 	@Prop({

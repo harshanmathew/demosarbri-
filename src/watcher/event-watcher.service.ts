@@ -33,7 +33,7 @@ export class EventWatcherService implements OnModuleInit {
 		})
 	}
 	async onModuleInit() {
-		//await this.startWatching()
+		await this.startWatching()
 	}
 
 	async startWatching() {
@@ -95,6 +95,8 @@ export class EventWatcherService implements OnModuleInit {
 			]),
 		)
 
+		console.log('Processing block:', block)
+
 		const transactionHashes = block.transactions.map(tx => tx.hash)
 		const receipts = await Promise.all(
 			transactionHashes.map(hash =>
@@ -106,10 +108,10 @@ export class EventWatcherService implements OnModuleInit {
 			receipt => customSerializer.deserialize(receipt).logs || [],
 		)
 
-		await this.saveEventsToDb(allLogs)
+		await this.saveEventsToDb(allLogs, Number(block.timestamp))
 	}
 
-	async saveEventsToDb(logs: any[]) {
+	async saveEventsToDb(logs: any[], timestamp: number) {
 		const eventLogs = logs.map(log => ({
 			address: log.address,
 			topics: log.topics,
@@ -120,6 +122,7 @@ export class EventWatcherService implements OnModuleInit {
 			blockHash: log.blockHash,
 			logIndex: log.logIndex,
 			removed: log.removed,
+			timestamp: new Date(timestamp * 1000),
 		}))
 
 		await this.eventLogModel.insertMany(eventLogs)

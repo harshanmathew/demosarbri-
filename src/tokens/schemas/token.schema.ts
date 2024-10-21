@@ -54,10 +54,6 @@ export class Token {
 	@ApiProperty({ type: String })
 	websiteLink: string
 
-	@Prop({ default: false })
-	@ApiProperty({ type: Boolean })
-	launched: boolean
-
 	@Prop({ enum: ['yes', 'no'] })
 	@ApiProperty({ enum: ['yes', 'no'] })
 	donate: 'yes' | 'no'
@@ -100,6 +96,14 @@ export class Token {
 	@Prop({ required: false })
 	@ApiProperty({ type: String })
 	virtualX: string
+
+	@Prop({ default: false })
+	@ApiProperty({ type: Boolean })
+	launched: boolean
+
+	@Prop({ default: false })
+	@ApiProperty({ type: Boolean })
+	graduated: boolean
 }
 
 export const TokenSchema = SchemaFactory.createForClass(Token)
