@@ -11,6 +11,7 @@ import { TokensModule } from './tokens/tokens.module'
 import { UploadsModule } from './uploads/uploads.module'
 import { UsersModule } from './users/users.module'
 import { WatcherModule } from './watcher/watcher.module'
+import { WsUpdatesModule } from './ws-updates/ws-updates.module'
 @Module({
 	imports: [
 		ConfigModule.forRoot({
@@ -26,6 +27,7 @@ import { WatcherModule } from './watcher/watcher.module'
 		UploadsModule,
 		TokensModule,
 		WatcherModule,
+		WsUpdatesModule,
 	],
 	providers: [
 		AppService,
