@@ -2,10 +2,9 @@ import {
 	MessageBody,
 	SubscribeMessage,
 	WebSocketGateway,
+	WebSocketServer,
 } from '@nestjs/websockets'
-import { CreateWsUpdateDto } from './dto/create-ws-update.dto'
-import { UpdateWsUpdateDto } from './dto/update-ws-update.dto'
-import { WsUpdatesService } from './ws-updates.service'
+import { Server, Socket } from 'socket.io'
 
 @WebSocketGateway({
 	cors: {
@@ -13,30 +12,21 @@ import { WsUpdatesService } from './ws-updates.service'
 	},
 })
 export class WsUpdatesGateway {
-	constructor(private readonly wsUpdatesService: WsUpdatesService) {}
+	@WebSocketServer()
+	server: Server
 
-	@SubscribeMessage('createWsUpdate')
-	create(@MessageBody() createWsUpdateDto: CreateWsUpdateDto) {
-		return this.wsUpdatesService.create(createWsUpdateDto)
+	// Handle client connection
+	handleConnection(client: Socket) {
+		console.log(`Client connected: ${client.id}`)
 	}
 
-	@SubscribeMessage('findAllWsUpdates')
-	findAll() {
-		return this.wsUpdatesService.findAll()
+	// Handle client disconnection
+	handleDisconnect(client: Socket) {
+		console.log(`Client disconnected: ${client.id}`)
 	}
 
-	@SubscribeMessage('findOneWsUpdate')
-	findOne(@MessageBody() id: number) {
-		return this.wsUpdatesService.findOne(id)
-	}
-
-	@SubscribeMessage('updateWsUpdate')
-	update(@MessageBody() updateWsUpdateDto: UpdateWsUpdateDto) {
-		return this.wsUpdatesService.update(updateWsUpdateDto.id, updateWsUpdateDto)
-	}
-
-	@SubscribeMessage('removeWsUpdate')
-	remove(@MessageBody() id: number) {
-		return this.wsUpdatesService.remove(id)
+	// Method to emit data from anywhere in your application
+	emitEvent(event: string, data: any) {
+		this.server.emit(event, data)
 	}
 }
