@@ -35,9 +35,20 @@ import { shibarium, shibariumTestnet } from 'viem/chains'
 import { EventLogs, EventLogsDocument } from './schema/event-logs.schema'
 
 type SharbiFunEventType = EventTypeFromAbi<typeof sharbiFunAbi>
+interface TokenUpdate {
+	totalRaisedInBoneBig: bigint
+	virtualY: bigint
+	virtualX: bigint
+	tokenAmountChange: bigint
+	ethAmountChange: bigint
+}
+
 @Injectable()
 export class EventProcessorService {
 	private isProcessing = false
+	private userCache = new Map<string, any>()
+	private tokenCache = new Map<string, any>()
+	private pendingUpdates = new Map<string, TokenUpdate>()
 	constructor(
 		@InjectModel(EventLogs.name)
 		private eventLogsModel: Model<EventLogsDocument>,
@@ -51,7 +62,150 @@ export class EventProcessorService {
 		private usersService: UsersService,
 		private readonly configService: ConfigService,
 		private wsUpdatesGateway: WsUpdatesGateway,
-	) {}
+	) {
+		//this.processTestScenario()
+	}
+	// private async processTestScenario() {
+	// 	const tokenAddress = '0x6E0d01A76C3Cf4288372a29124A26D4353EE51BE'
+	// 	const sampleEvents = [
+	// 		// Launch Event
+	// 		{
+	// 			event: {
+	// 				blockNumber: 1,
+	// 				timestamp: new Date(),
+	// 				transactionHash: 'tx1',
+	// 			},
+	// 			parsed: {
+	// 				eventName: 'Launch',
+	// 				args: {
+	// 					launcher: '0x599333629bA154aF829a8880f18313311CfcE6EA',
+	// 					tokenAddress: tokenAddress,
+	// 					name: 'Test Token',
+	// 					symbol: 'TEST',
+	// 					totalSupply: BigInt('10000000000000000000000'), // 10,000 tokens
+	// 					curveSize: 0, // beginner curve
+	// 				},
+	// 			},
+	// 		},
+	// 		// First Buy Event
+	// 		{
+	// 			event: {
+	// 				blockNumber: 2,
+	// 				timestamp: new Date(),
+	// 				transactionHash: 'tx2',
+	// 			},
+	// 			parsed: {
+	// 				eventName: 'Buy',
+	// 				args: {
+	// 					buyer: '0x599333629bA154aF829a8880f18313311CfcE6EA',
+	// 					tokenAddress: tokenAddress,
+	// 					ethAmountIn: BigInt('100000000000000000000'), // 100 BONE
+	// 					tokenAmountOut: BigInt('1500000000000000000000'), // 1,500 tokens
+	// 				},
+	// 			},
+	// 		},
+	// 		// Second Buy Event
+	// 		{
+	// 			event: {
+	// 				blockNumber: 3,
+	// 				timestamp: new Date(),
+	// 				transactionHash: 'tx3',
+	// 			},
+	// 			parsed: {
+	// 				eventName: 'Buy',
+	// 				args: {
+	// 					buyer: '0x60D9637A7ad741a7F60595045d29960326c1843A',
+	// 					tokenAddress: tokenAddress,
+	// 					ethAmountIn: BigInt('50000000000000000000'), // 50 BONE
+	// 					tokenAmountOut: BigInt('700000000000000000000'), // 700 tokens
+	// 				},
+	// 			},
+	// 		},
+	// 		// Third Buy Event
+	// 		{
+	// 			event: {
+	// 				blockNumber: 4,
+	// 				timestamp: new Date(),
+	// 				transactionHash: 'tx4',
+	// 			},
+	// 			parsed: {
+	// 				eventName: 'Buy',
+	// 				args: {
+	// 					buyer: '0xfFfFD00d331C3Ff80D8F7d82A2f9A2312E0124b4',
+	// 					tokenAddress: tokenAddress,
+	// 					ethAmountIn: BigInt('30000000000000000000'), // 30 BONE
+	// 					tokenAmountOut: BigInt('400000000000000000000'), // 400 tokens
+	// 				},
+	// 			},
+	// 		},
+	// 		// Sell Event
+	// 		{
+	// 			event: {
+	// 				blockNumber: 5,
+	// 				timestamp: new Date(),
+	// 				transactionHash: 'tx5',
+	// 			},
+	// 			parsed: {
+	// 				eventName: 'Sell',
+	// 				args: {
+	// 					seller: '0x599333629bA154aF829a8880f18313311CfcE6EA',
+	// 					tokenAddress: tokenAddress,
+	// 					ethAmountOut: BigInt('75000000000000000000'), // 75 BONE
+	// 					tokenAmountIn: BigInt('1000000000000000000000'), // 1000 tokens
+	// 				},
+	// 			},
+	// 		},
+	// 	]
+
+	// 	console.log('=== Processing Complete Token Lifecycle Events ===')
+	// 	await this.processTokenEvents(tokenAddress, sampleEvents as any)
+
+	// 	// Create sample events for a pro curve token
+	// 	const proTokenAddress = '0xb794f5ea0ba39494ce839613fffba74279579268'
+	// 	const proTokenEvents = [
+	// 		{
+	// 			event: {
+	// 				blockNumber: 1,
+	// 				timestamp: new Date(),
+	// 				transactionHash: 'tx6',
+	// 			},
+	// 			parsed: {
+	// 				eventName: 'Launch',
+	// 				args: {
+	// 					launcher: '0x60D9637A7ad741a7F60595045d29960326c1843A',
+	// 					tokenAddress: proTokenAddress,
+	// 					name: 'Pro Token',
+	// 					symbol: 'PRO',
+	// 					totalSupply: BigInt('10000000000000000000000'), // 10,000 tokens
+	// 					curveSize: 1, // pro curve
+	// 				},
+	// 			},
+	// 		},
+	// 		// Sample buy for pro token
+	// 		{
+	// 			event: {
+	// 				blockNumber: 2,
+	// 				timestamp: new Date(),
+	// 				transactionHash: 'tx7',
+	// 			},
+	// 			parsed: {
+	// 				eventName: 'Buy',
+	// 				args: {
+	// 					buyer: '0x60D9637A7ad741a7F60595045d29960326c1843A',
+	// 					tokenAddress: proTokenAddress,
+	// 					ethAmountIn: BigInt('200000000000000000000'), // 200 BONE
+	// 					tokenAmountOut: BigInt('1000000000000000000000'), // 1,000 tokens
+	// 				},
+	// 			},
+	// 		},
+	// 	]
+
+	// 	console.log('\n=== Processing Pro Token Events ===')
+	// 	await this.processTokenEvents(proTokenAddress, proTokenEvents as any)
+
+	// 	console.log('\n=== Flushing Pending Updates ===')
+	// 	await this.flushPendingUpdates()
+	// }
 
 	@Cron(CronExpression.EVERY_5_SECONDS)
 	async processEvents() {
@@ -62,6 +216,7 @@ export class EventProcessorService {
 		this.isProcessing = true
 		try {
 			await this.processUnprocessedEvents()
+			await this.flushPendingUpdates()
 		} catch (error) {
 			console.error('Error processing events:', error)
 		} finally {
@@ -72,29 +227,157 @@ export class EventProcessorService {
 	private async processUnprocessedEvents() {
 		const unprocessedEvents = await this.eventLogsModel
 			.find({ processed: false })
-			.sort({ blockNumber: 1, logIndex: 1 })
+			.sort({ blockNumber: 1, logIndex: 1, transactionIndex: 1 })
+			.lean()
 
-		for (const event of unprocessedEvents) {
-			if (
-				isAddressEqual(
-					event.address as `0x${string}`,
-					this.configService.get<`0x${string}`>('SHARBI_FUN_ADDRESS'),
-				)
-			) {
-				const sharbiFunEvent = parseLog(
-					event as unknown as LogsType,
-					sharbiFunAbi,
-				)
-				if (sharbiFunEvent) {
-					await this.handleSharbiFunEvent(event, sharbiFunEvent)
-				}
-			}
-
-			await this.eventLogsModel.findByIdAndUpdate(event._id, {
-				processed: true,
-				syncedAt: new Date(),
-			})
+		if (unprocessedEvents.length === 0) {
+			return
 		}
+
+		// Group events by address for batch processing
+		const eventsByAddress = this.groupEventsByAddress(unprocessedEvents)
+
+		// Process event groups concurrently
+		await Promise.all(
+			Object.entries(eventsByAddress).map(([address, events]) =>
+				this.processEventGroup(address as `0x${string}`, events),
+			),
+		)
+
+		const eventIds = unprocessedEvents.map(event => event._id)
+		await this.eventLogsModel.updateMany(
+			{ _id: { $in: eventIds } },
+			{ $set: { processed: true, syncedAt: new Date() } },
+		)
+	}
+
+	private async processEventGroup(
+		address: `0x${string}`,
+		events: EventLogsDocument[],
+	) {
+		if (
+			isAddressEqual(
+				address,
+				this.configService.get<`0x${string}`>('SHARBI_FUN_ADDRESS'),
+			)
+		) {
+			// Group events by token address
+			const eventsByToken = events.reduce(
+				(acc, event) => {
+					const parsed = parseLog(event as unknown as LogsType, sharbiFunAbi)
+					if (!parsed) {
+						return acc
+					}
+
+					if ('tokenAddress' in parsed.args) {
+						const tokenAddress = getAddress(parsed.args.tokenAddress)
+						if (!acc[tokenAddress]) {
+							acc[tokenAddress] = []
+						}
+						acc[tokenAddress].push({ event, parsed })
+					}
+					return acc
+				},
+				{} as Record<string, Array<{ event: EventLogsDocument; parsed: any }>>,
+			)
+			// Process each token's events in sequence
+			for (const [tokenAddress, tokenEvents] of Object.entries(eventsByToken)) {
+				await this.processTokenEvents(tokenAddress, tokenEvents)
+			}
+		} else {
+			return
+		}
+	}
+
+	private async processTokenEvents(
+		tokenAddress: string,
+		events: Array<{ event: EventLogsDocument; parsed: any }>,
+	) {
+		let token: TokenDocument
+
+		// Process events in sequence for this token
+		for (const { event, parsed } of events) {
+			if (parsed.eventName === 'Buy' || parsed.eventName === 'Sell') {
+				if (!token) {
+					token = await this.getToken(tokenAddress)
+					if (!token) {
+						return
+					}
+
+					// Initialize accumulator for this token if it doesn't exist
+					if (!this.pendingUpdates.has(token._id.toString())) {
+						this.pendingUpdates.set(token._id.toString(), {
+							totalRaisedInBoneBig: BigInt(token.totalRaisedInBoneBig),
+							virtualY: BigInt(token.virtualY),
+							virtualX: BigInt(token.virtualX),
+							tokenAmountChange: BigInt(0),
+							ethAmountChange: BigInt(0),
+						})
+					}
+				}
+
+				await this.handleTradeEvent(token, event, parsed)
+			} else {
+				await this.handleSharbiFunEvent(event, parsed)
+			}
+		}
+	}
+
+	private async handleTradeEvent(
+		token: any,
+		event: EventLogsDocument,
+		eventData: any,
+	) {
+		const isBuy = eventData.eventName === 'Buy'
+		const ethAmount = isBuy
+			? eventData.args.ethAmountIn
+			: eventData.args.ethAmountOut
+		const tokenAmount = isBuy
+			? eventData.args.tokenAmountOut
+			: eventData.args.tokenAmountIn
+
+		// Get current accumulated updates
+		const updates = this.pendingUpdates.get(token._id.toString())
+
+		// Update the accumulator
+		updates.ethAmountChange = isBuy
+			? updates.ethAmountChange + BigInt(ethAmount)
+			: updates.ethAmountChange - BigInt(ethAmount)
+
+		updates.tokenAmountChange = isBuy
+			? updates.tokenAmountChange - BigInt(tokenAmount)
+			: updates.tokenAmountChange + BigInt(tokenAmount)
+
+		// Calculate new totals
+		updates.totalRaisedInBoneBig =
+			BigInt(token.totalRaisedInBoneBig) + updates.ethAmountChange
+		updates.virtualY = BigInt(token.virtualY) + updates.ethAmountChange
+		updates.virtualX = BigInt(token.virtualX) + updates.tokenAmountChange
+
+		// Store trade information
+		await this.handleTrades(
+			getAddress(token.address),
+			getAddress(isBuy ? eventData.args.buyer : eventData.args.seller),
+			ethAmount,
+			tokenAmount,
+			isBuy ? 'buy' : 'sell',
+			event.timestamp,
+			event.transactionHash,
+		)
+	}
+
+	private groupEventsByAddress(events: EventLogsDocument[]) {
+		return events.reduce(
+			(groups, event) => {
+				const address = event.address
+				if (!groups[address]) {
+					groups[address] = []
+				}
+				groups[address].push(event)
+				return groups
+			},
+			{} as Record<string, EventLogsDocument[]>,
+		)
 	}
 
 	private async handleSharbiFunEvent(
@@ -106,6 +389,91 @@ export class EventProcessorService {
 		} else {
 			console.log(`Unhandled event type: ${eventData.eventName}`)
 		}
+	}
+
+	private async getToken(address: string) {
+		if (this.tokenCache.has(address)) {
+			return this.tokenCache.get(address)
+		}
+
+		const token = await this.tokenModel.findOne({
+			address: getAddress(address),
+			launched: true,
+		})
+
+		if (token) {
+			this.tokenCache.set(address, token)
+		}
+		return token
+	}
+
+	private calculateTokenPrice(
+		virtualY: bigint,
+		virtualX: bigint,
+	): {
+		priceInBigInt: bigint
+		priceInBone: number
+	} {
+		// Scale up before division to maintain precision
+		// biome-ignore lint/style/useNamingConvention: <explanation>
+		const SCALE = BigInt(10) ** BigInt(18)
+		const scaledPrice = (virtualY * SCALE) / virtualX
+
+		return {
+			priceInBigInt: scaledPrice,
+			priceInBone: Number(
+				Number(Number(scaledPrice) / Number(SCALE)).toFixed(4),
+			),
+		}
+	}
+
+	private async flushPendingUpdates() {
+		const updates = []
+
+		for (const [tokenId, accumulatedUpdates] of this.pendingUpdates.entries()) {
+			const { totalRaisedInBoneBig, virtualY, virtualX } = accumulatedUpdates
+
+			console.log('virtualY', virtualY)
+			console.log('virtualX', virtualX)
+			const newTokenPrice = this.calculateTokenPrice(virtualY, virtualX)
+
+			console.log('newTokenPrice', newTokenPrice)
+			const token = await this.tokenModel.findById(tokenId)
+			const newMarketCap =
+				newTokenPrice.priceInBone *
+				Number(BigInt(token.tokenSupply) / BigInt(10n ** 18n))
+
+			const newMarketCapBig = BigInt(newMarketCap * 10 ** 18)
+
+			updates.push(
+				this.tokenModel.updateOne(
+					{ _id: tokenId },
+					{
+						$set: {
+							totalRaisedInBoneBig: totalRaisedInBoneBig.toString(),
+							totalRaisedInBone: Number(
+								Number(totalRaisedInBoneBig / BigInt(10n ** 18n)).toFixed(2),
+							),
+							virtualY: virtualY.toString(),
+							virtualX: virtualX.toString(),
+							tokenPriceInBoneBig: newTokenPrice.priceInBigInt.toString(),
+							tokenPriceInBone: newTokenPrice.priceInBone,
+							marketCapInBoneBig: newMarketCapBig.toString(),
+							marketCapInBone: Number(Number(newMarketCap).toFixed(4)),
+						},
+					},
+				),
+			)
+		}
+
+		if (updates.length > 0) {
+			await Promise.all(updates)
+		}
+
+		// Clear all caches and pending updates
+		this.pendingUpdates.clear()
+		this.userCache.clear()
+		this.tokenCache.clear()
 	}
 
 	private async handleLaunchSharbiFunEvent(
@@ -205,102 +573,6 @@ export class EventProcessorService {
 		}
 	}
 
-	private async handleBuySharbiFunEvent(
-		event: EventLogsDocument,
-		eventData: Extract<SharbiFunEventType, { eventName: 'Buy' }>,
-	) {
-		const token = await this.tokenModel.findOne({
-			address: getAddress(eventData.args.tokenAddress),
-			launched: true,
-		})
-
-		if (token) {
-			token.totalRaisedInBoneBig = (
-				BigInt(token.totalRaisedInBoneBig) + BigInt(eventData.args.ethAmountIn)
-			).toString()
-			token.totalRaisedInBone = Number(
-				Number(BigInt(token.totalRaisedInBoneBig) / BigInt(10 ** 12)).toFixed(
-					2,
-				),
-			)
-			const newVirtualY =
-				BigInt(token.virtualY) + BigInt(eventData.args.ethAmountIn)
-			const newVirtualX =
-				BigInt(token.virtualX) - BigInt(eventData.args.tokenAmountOut)
-			token.virtualY = newVirtualY.toString()
-			token.virtualX = newVirtualX.toString()
-
-			const newTokenPrice = newVirtualY / newVirtualX
-			token.tokenPriceInBoneBig = newTokenPrice.toString()
-			token.tokenPriceInBone = Number(Number(newTokenPrice).toFixed(2))
-
-			const newMarketCap =
-				(newTokenPrice * BigInt(token.tokenSupply)) / BigInt(10 ** 18)
-			token.marketCapInBoneBig = newMarketCap.toString()
-			token.marketCapInBone = Number(Number(newMarketCap).toFixed(2))
-
-			await token.save()
-
-			await this.handleTrades(
-				getAddress(token.address),
-				getAddress(eventData.args.buyer),
-				eventData.args.ethAmountIn,
-				eventData.args.tokenAmountOut,
-				'buy',
-				event.timestamp,
-				event.transactionHash,
-			)
-		}
-	}
-
-	private async handleSellSharbiFunEvent(
-		event: EventLogsDocument,
-		eventData: Extract<SharbiFunEventType, { eventName: 'Sell' }>,
-	) {
-		const token = await this.tokenModel.findOne({
-			address: getAddress(eventData.args.tokenAddress),
-			launched: true,
-		})
-
-		if (token) {
-			token.totalRaisedInBoneBig = (
-				BigInt(token.totalRaisedInBoneBig) - BigInt(eventData.args.ethAmountOut)
-			).toString()
-			token.totalRaisedInBone = Number(
-				Number(BigInt(token.totalRaisedInBoneBig) / BigInt(10 ** 12)).toFixed(
-					2,
-				),
-			)
-			const newVirtualY =
-				BigInt(token.virtualY) - BigInt(eventData.args.ethAmountOut)
-			const newVirtualX =
-				BigInt(token.virtualX) + BigInt(eventData.args.tokenAmountIn)
-			token.virtualY = newVirtualY.toString()
-			token.virtualX = newVirtualX.toString()
-
-			const newTokenPrice = newVirtualY / newVirtualX
-			token.tokenPriceInBoneBig = newTokenPrice.toString()
-			token.tokenPriceInBone = Number(Number(newTokenPrice).toFixed(2))
-
-			const newMarketCap =
-				(newTokenPrice * BigInt(token.tokenSupply)) / BigInt(10 ** 18)
-			token.marketCapInBoneBig = newMarketCap.toString()
-			token.marketCapInBone = Number(Number(newMarketCap).toFixed(2))
-
-			await token.save()
-
-			await this.handleTrades(
-				getAddress(token.address),
-				getAddress(eventData.args.seller),
-				eventData.args.ethAmountOut,
-				eventData.args.tokenAmountIn,
-				'sell',
-				event.timestamp,
-				event.transactionHash,
-			)
-		}
-	}
-
 	private async handleTrades(
 		tokenAddress: `0x${string}`,
 		trader: `0x${string}`,
@@ -310,13 +582,13 @@ export class EventProcessorService {
 		timestamp: Date,
 		txHash: string,
 	) {
-		const token = await this.tokenModel.findOne({ address: tokenAddress })
+		const token = await this.getToken(tokenAddress)
 		const user = await this.createUserIfNotExists(trader)
 
 		const tokenTrade = new this.tokenTradesModel({
 			token: token._id,
 			trader: user._id,
-			boneAmount: Number(boneAmount / BigInt(10 ** 12)).toFixed(2),
+			boneAmount: Number(boneAmount / BigInt(10 ** 18)).toFixed(2),
 			tokenAmount: Number(tokenAmount / BigInt(10 ** 18)).toFixed(2),
 			type,
 			timestamp,
@@ -327,7 +599,7 @@ export class EventProcessorService {
 		const userActivity = new this.userActivityModel({
 			user: user._id,
 			type,
-			boneAmount: Number(boneAmount / BigInt(10 ** 12)).toFixed(2),
+			boneAmount: Number(boneAmount / BigInt(10 ** 18)).toFixed(2),
 			tokenAmount: Number(tokenAmount / BigInt(10 ** 18)).toFixed(2),
 			token: token._id,
 			timestamp,
@@ -336,7 +608,7 @@ export class EventProcessorService {
 
 		const tokenHolders = await this.tokenHoldersModel.findOne({
 			token: token._id,
-			user: user._id,
+			holder: user._id,
 		})
 
 		if (tokenHolders) {
@@ -357,7 +629,7 @@ export class EventProcessorService {
 		} else {
 			const newTokenHolders = new this.tokenHoldersModel({
 				token: token._id,
-				user: user._id,
+				holder: user._id,
 				balance: type === 'buy' ? tokenAmount.toString() : '0',
 			})
 			await newTokenHolders.save()
@@ -424,11 +696,16 @@ export class EventProcessorService {
 		})
 	}
 
-	async createUserIfNotExists(address: string) {
+	private async createUserIfNotExists(address: string) {
+		if (this.userCache.has(address)) {
+			return this.userCache.get(address)
+		}
+
 		let user = await this.usersService.findByAddress(address)
 		if (!user) {
 			user = await this.usersService.create({ address })
 		}
+		this.userCache.set(address, user)
 		return user
 	}
 }

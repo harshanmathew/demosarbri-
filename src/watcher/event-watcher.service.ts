@@ -7,14 +7,15 @@ import { Model } from 'mongoose'
 import { customSerializer } from 'src/utils/custom-serializer'
 import { EventTypeFromAbi, parseLogs } from 'src/utils/parse-logs'
 import { sharbiFunAbi } from 'src/utils/sharbi-fun.abi'
-import { Abi, ContractEventName, getAddress, isAddressEqual } from 'viem'
+import { Abi, ContractEventName, getAddress, isAddressEqual, toHex } from 'viem'
 import { EventLogsDocument } from './schema/event-logs.schema'
 import { SyncDetailsDocument } from './schema/sync-details.schema'
 
 @Injectable()
 export class EventWatcherService implements OnModuleInit {
 	private queueEvents: QueueEvents
-
+	// biome-ignore lint/style/useNamingConvention: <explanation>
+	private readonly BATCH_SIZE = 10 // Number of blocks to fetch in a single batch
 	constructor(
 		@InjectModel('SyncDetails')
 		private readonly syncDetailsModel: Model<SyncDetailsDocument>,
@@ -23,6 +24,7 @@ export class EventWatcherService implements OnModuleInit {
 		private readonly eventLogModel: Model<EventLogsDocument>,
 		private readonly configService: ConfigService,
 	) {
+		this.rpcRequestsQueue.setMaxListeners(30)
 		this.queueEvents = new QueueEvents('rpc-requests', {
 			connection: {
 				host: this.configService.get('REDIS_HOST'),
@@ -31,22 +33,31 @@ export class EventWatcherService implements OnModuleInit {
 				db: this.configService.get('REDIS_DB'),
 			},
 		})
+		this.queueEvents.setMaxListeners(30)
 	}
 	async onModuleInit() {
 		await this.startWatching()
 	}
 
 	async startWatching() {
-		console.log('Starting block watcher')
 		let lastProcessedBlock = await this.getLastProcessedBlock()
 
+		console.log('Last processed block:', lastProcessedBlock)
+
 		const processBlocksUntil = async (targetBlock: number) => {
-			console.log('processBlocksUntil:', targetBlock)
 			while (lastProcessedBlock < targetBlock) {
-				console.log(`Processing block ${lastProcessedBlock + 1}`)
-				await this.processBlock(lastProcessedBlock + 1)
-				await this.updateLastProcessedBlock(lastProcessedBlock + 1)
-				lastProcessedBlock++
+				const fromBlock = lastProcessedBlock + 1
+				const toBlock = Math.min(fromBlock + this.BATCH_SIZE - 1, targetBlock)
+
+				console.log(`Processing blocks ${fromBlock} to ${toBlock}`)
+				const startTime = Date.now()
+				await this.processBlockRange(fromBlock, toBlock)
+				await this.updateLastProcessedBlock(toBlock)
+				const processingTime = (Date.now() - startTime) / 1000
+				console.log(
+					`Blocks ${fromBlock} to ${toBlock} processed in ${processingTime}s`,
+				)
+				lastProcessedBlock = toBlock
 			}
 		}
 
@@ -76,7 +87,7 @@ export class EventWatcherService implements OnModuleInit {
 					console.log('Error:', e)
 				}
 				scheduleNextCheck() // Schedule the next check after this one completes
-			}, 5000) // Wait 5 seconds before the next check
+			}, 4000) // Wait 4 seconds before the next check
 		}
 
 		// Start the checking process
@@ -85,45 +96,58 @@ export class EventWatcherService implements OnModuleInit {
 		console.log('Block watcher started. Now monitoring for new blocks.')
 	}
 
-	async processBlock(blockNumber: number) {
-		const block = customSerializer.deserialize(
-			await this.queueRpcRequest('getBlock', [
-				{
-					blockNumber: blockNumber,
-					includeTransactions: true,
-				},
-			]),
-		)
-
-		console.log('Processing block:', block)
-
-		const transactionHashes = block.transactions.map(tx => tx.hash)
-		const receipts = await Promise.all(
-			transactionHashes.map(hash =>
-				this.queueRpcRequest('getTransactionReceipt', [{ hash }]),
+	async processBlockRange(fromBlock: number, toBlock: number) {
+		// Get timestamps for the block range
+		// Get block timestamps
+		const blocks = await Promise.all(
+			Array.from({ length: toBlock - fromBlock + 1 }, (_, i) =>
+				this.queueRpcRequest('getBlock', [{ blockNumber: fromBlock + i }]),
 			),
 		)
 
-		const allLogs = receipts.flatMap(
-			receipt => customSerializer.deserialize(receipt).logs || [],
+		// Create a map of block numbers to timestamps
+		const blockTimestamps = new Map(
+			blocks.map(block => {
+				const deserializedBlock = customSerializer.deserialize(block)
+				return [
+					Number(deserializedBlock.number),
+					Number(deserializedBlock.timestamp),
+				]
+			}),
 		)
 
-		await this.saveEventsToDb(allLogs, Number(block.timestamp))
+		const logs = await this.queueRpcRequest('getLogs', [
+			{
+				fromBlock: toHex(fromBlock),
+				toBlock: toHex(toBlock),
+				address: getAddress(this.configService.get('SHARBI_FUN_ADDRESS')),
+			},
+		])
+
+		const deserializedLogs = customSerializer.deserialize(logs)
+		if (deserializedLogs && deserializedLogs.length > 0) {
+			await this.saveEventsToDb(deserializedLogs, blockTimestamps)
+		}
 	}
 
-	async saveEventsToDb(logs: any[], timestamp: number) {
-		const eventLogs = logs.map(log => ({
-			address: log.address,
-			topics: log.topics,
-			data: log.data,
-			blockNumber: Number(log.blockNumber),
-			transactionHash: log.transactionHash,
-			transactionIndex: log.transactionIndex,
-			blockHash: log.blockHash,
-			logIndex: log.logIndex,
-			removed: log.removed,
-			timestamp: new Date(timestamp * 1000),
-		}))
+	async saveEventsToDb(logs: any[], blockTimestamps: Map<number, number>) {
+		const eventLogs = logs.map(log => {
+			const blockNumber = Number(log.blockNumber)
+			const timestamp = blockTimestamps.get(blockNumber)
+
+			return {
+				address: log.address,
+				topics: log.topics,
+				data: log.data,
+				blockNumber,
+				transactionHash: log.transactionHash,
+				transactionIndex: log.transactionIndex,
+				blockHash: log.blockHash,
+				logIndex: log.logIndex,
+				removed: log.removed,
+				timestamp: new Date(timestamp * 1000),
+			}
+		})
 
 		await this.eventLogModel.insertMany(eventLogs)
 	}
