@@ -20,6 +20,7 @@ import { UserDocument } from 'src/users/schemas/user.schemas'
 import { UsersService } from 'src/users/users.service'
 import { EventTypeFromAbi, LogsType, parseLog } from 'src/utils/parse-logs'
 import { sharbiFunAbi } from 'src/utils/sharbi-fun.abi'
+import { WsUpdatesGateway } from 'src/ws-updates/ws-updates.gateway'
 import {
 	http,
 	Chain,
@@ -49,6 +50,7 @@ export class EventProcessorService {
 		private userActivityModel: Model<UserActivityDocument>,
 		private usersService: UsersService,
 		private readonly configService: ConfigService,
+		private wsUpdatesGateway: WsUpdatesGateway,
 	) {}
 
 	@Cron(CronExpression.EVERY_5_SECONDS)
@@ -169,6 +171,23 @@ export class EventProcessorService {
 			timestamp: event.timestamp,
 		})
 		await userActivity.save()
+		this.wsUpdatesGateway.emitEvent('tokenLaunched', {
+			address: token.address,
+			creator: {
+				address: creator.address,
+				_id: creator._id,
+				username: creator.username,
+			},
+			name: token.name,
+			ticker: token.ticker,
+			tokenSupply: token.tokenSupply,
+			bondingCurve: token.bondingCurve,
+			twitterLink: token.twitterLink,
+			telegramLink: token.telegramLink,
+			websiteLink: token.websiteLink,
+			description: token.description,
+			image: token.image,
+		})
 	}
 
 	private async handleDonationSharbiFunEvent(

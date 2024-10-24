@@ -16,6 +16,7 @@ import {
 	UserActivitySchema,
 } from 'src/users/schemas/user-activity.schema'
 import { UsersModule } from 'src/users/users.module'
+import { WsUpdatesModule } from 'src/ws-updates/ws-updates.module'
 import { EventProcessorService } from './event-processor.service'
 import { EventWatcherService } from './event-watcher.service'
 import { RpcRequestProcessor } from './rpc-queue.processor'
@@ -45,6 +46,7 @@ import { SyncDetails, SyncDetailsSchema } from './schema/sync-details.schema'
 			{ name: UserActivity.name, schema: UserActivitySchema },
 		]),
 		UsersModule,
+		WsUpdatesModule,
 	],
 	providers: [RpcRequestProcessor, EventWatcherService, EventProcessorService],
 	controllers: [],
