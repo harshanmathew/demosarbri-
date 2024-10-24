@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Auth } from 'src/auth/auth.decorator'
 import { User } from 'src/users/schemas/user.schemas'
 import { UserInfo } from 'src/users/user.decorator'
+import { RecentlyLaunchedQueryDto } from 'src/ws-updates/dto/recently-launched-query.dto'
+import { RecentlyLaunchedResponseDto } from 'src/ws-updates/dto/recently-launched-response.dto'
 import { CreateTokenDto } from './dto/create-token.dto'
 import { Token } from './schemas/token.schema'
 import { TokensService } from './tokens.service'
@@ -66,5 +68,16 @@ export class TokensController {
 	})
 	findAllLaunched() {
 		return this.tokensService.findAllLaunched()
+	}
+
+	@Get('/recently-launched')
+	@ApiOperation({ summary: 'Get recently launched tokens' })
+	@ApiResponse({
+		status: 200,
+		description: 'Return recently launched tokens.',
+		type: RecentlyLaunchedResponseDto,
+	})
+	findRecentlyLaunched(@Query() queryParams: RecentlyLaunchedQueryDto) {
+		return this.tokensService.findRecentlyLaunched(queryParams)
 	}
 }
