@@ -131,7 +131,7 @@ export class EventWatcherService implements OnModuleInit {
 	}
 
 	async saveEventsToDb(logs: any[], blockTimestamps: Map<number, number>) {
-		const eventLogs = logs.map(log => {
+		const eventLogs = logs?.map(log => {
 			const blockNumber = Number(log.blockNumber)
 			const timestamp = blockTimestamps.get(blockNumber)
 
