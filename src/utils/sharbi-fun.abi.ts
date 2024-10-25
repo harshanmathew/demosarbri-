@@ -213,6 +213,13 @@ export const sharbiFunAbi = [
 	},
 	{
 		type: 'function',
+		name: 'launchFee',
+		inputs: [],
+		outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+		stateMutability: 'view',
+	},
+	{
+		type: 'function',
 		name: 'operator',
 		inputs: [],
 		outputs: [{ name: '', type: 'address', internalType: 'address' }],
@@ -302,6 +309,15 @@ export const sharbiFunAbi = [
 	},
 	{
 		type: 'function',
+		name: 'setLaunchFee',
+		inputs: [
+			{ name: 'newLaunchFee', type: 'uint256', internalType: 'uint256' },
+		],
+		outputs: [],
+		stateMutability: 'nonpayable',
+	},
+	{
+		type: 'function',
 		name: 'setOperator',
 		inputs: [{ name: 'newOperator', type: 'address', internalType: 'address' }],
 		outputs: [],
@@ -367,6 +383,13 @@ export const sharbiFunAbi = [
 		name: 'tokenLaunchBlock',
 		inputs: [{ name: '', type: 'address', internalType: 'address' }],
 		outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
+		stateMutability: 'view',
+	},
+	{
+		type: 'function',
+		name: 'tokenLaunchers',
+		inputs: [{ name: '', type: 'address', internalType: 'address' }],
+		outputs: [{ name: '', type: 'address', internalType: 'address' }],
 		stateMutability: 'view',
 	},
 	{
@@ -709,6 +732,19 @@ export const sharbiFunAbi = [
 		inputs: [
 			{
 				name: 'graduateFee',
+				type: 'uint256',
+				indexed: false,
+				internalType: 'uint256',
+			},
+		],
+		anonymous: false,
+	},
+	{
+		type: 'event',
+		name: 'SetLaunchFee',
+		inputs: [
+			{
+				name: 'launchFee',
 				type: 'uint256',
 				indexed: false,
 				internalType: 'uint256',
