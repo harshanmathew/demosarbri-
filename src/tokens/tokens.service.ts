@@ -92,8 +92,6 @@ export class TokensService {
 		const pageSize = Math.max(1, limit)
 		const skip = (currentPage - 1) * pageSize
 
-		query.skip(skip).limit(pageSize)
-
 		// Execute query and get total count
 		const [tokens, total] = await Promise.all([
 			this.tokenModel
