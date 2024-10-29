@@ -10,11 +10,11 @@ export class Token {
 	@ApiProperty({ type: String })
 	_id: Types.ObjectId
 
-	@Prop({ required: true })
+	@Prop({ required: false })
 	@ApiProperty({ type: String })
 	name: string
 
-	@Prop({ required: true })
+	@Prop({ required: false })
 	@ApiProperty({ type: String })
 	ticker: string
 
@@ -30,7 +30,7 @@ export class Token {
 	@ApiProperty({ type: String })
 	image: string
 
-	@Prop({ required: true })
+	@Prop({ required: false })
 	@ApiProperty({ type: String })
 	tokenSupply: string
 

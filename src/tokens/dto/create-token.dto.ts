@@ -10,14 +10,6 @@ import {
 } from 'class-validator'
 
 export class CreateTokenDto {
-	@ApiProperty({ example: 'My Awesome Token' })
-	@IsString()
-	name: string
-
-	@ApiProperty({ example: 'MAT' })
-	@IsString()
-	ticker: string
-
 	@ApiProperty({
 		example: 'This is a revolutionary new token for awesome people.',
 	})
@@ -32,20 +24,10 @@ export class CreateTokenDto {
 	@IsString()
 	image: string
 
-	@ApiProperty({ example: 1000000 })
-	@IsNumber()
-	@Min(1000)
-	@Max(100000000000)
-	tokenSupply: number
-
 	@ApiPropertyOptional({ example: 1000 })
 	@IsNumber()
 	@IsOptional()
 	initialBuyAmount?: number
-
-	@ApiProperty({ enum: ['beginner', 'pro'], example: 'beginner' })
-	@IsEnum(['beginner', 'pro'])
-	bondingCurve: 'beginner' | 'pro'
 
 	@ApiPropertyOptional({ example: 'https://twitter.com/myawesometoken' })
 	@IsString()
@@ -61,9 +43,4 @@ export class CreateTokenDto {
 	@IsString()
 	@IsOptional()
 	websiteLink?: string
-
-	@ApiPropertyOptional({ example: 'yes' })
-	@IsEnum(['yes', 'no'])
-	@IsOptional()
-	donate?: 'yes' | 'no'
 }
