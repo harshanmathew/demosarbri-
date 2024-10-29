@@ -72,14 +72,6 @@ export class TokensController {
 		return this.tokensService.findRecentlyLaunched(queryParams)
 	}
 
-	@Put(':id/launch')
-	@ApiOperation({ summary: 'Launch a token' })
-	@ApiResponse({
-		status: 200,
-		description: 'The token has been successfully launched.',
-		type: Token,
-	})
-
 	@Get(':address')
 	@ApiOperation({ summary: 'Get a specific token by address' })
 	@ApiResponse({ status: 200, description: 'Return the token.', type: Token })
