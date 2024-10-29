@@ -61,25 +61,30 @@ export class TokensService {
 	}> {
 		const { page = 1, limit = 10, search, sort, filter } = queryParams
 
-		const query = this.tokenModel.find({ launched: true })
+		const query: any = { launched: true, graduated: false }
 
 		// Apply search filter
 		if (search) {
-			query.find({
-				name: { $regex: search, $options: 'i' },
-			})
+			query.$or = [
+				{ name: { $regex: search, $options: 'i' } },
+				{ ticker: { $regex: search, $options: 'i' } },
+			]
 		}
 
 		// Apply additional filters
 		if (filter) {
-			query.find(filter)
+			if (filter.bondingCurve) {
+				query.bondingCurve = filter.bondingCurve
+			}
 		}
+
+		let sortOptions = {}
 
 		// Apply sorting
 		if (sort) {
-			query.sort(sort)
+			sortOptions = sort
 		} else {
-			query.sort({ createdAt: -1 }) // Default sorting
+			sortOptions = { createdAt: -1 }
 		}
 
 		// Apply pagination
@@ -91,8 +96,14 @@ export class TokensService {
 
 		// Execute query and get total count
 		const [tokens, total] = await Promise.all([
-			query.exec(),
-			this.tokenModel.countDocuments({ launched: true }),
+			this.tokenModel
+				.find(query)
+				.populate('creator')
+				.sort(sortOptions)
+				.skip(skip)
+				.limit(pageSize)
+				.exec(),
+			this.tokenModel.countDocuments(query),
 		])
 
 		const totalPages = Math.ceil(total / pageSize)
@@ -115,6 +126,32 @@ export class TokensService {
 			tokens: list,
 			totalPages,
 			currentPage,
+		}
+	}
+
+	async findRandomToken(): Promise<TokenDto> {
+		const count = await this.tokenModel.countDocuments({
+			launched: true,
+			graduated: false,
+		})
+		const random = Math.floor(Math.random() * count)
+		const token = await this.tokenModel
+			.findOne({ launched: true, graduated: false })
+			.skip(random)
+			.exec()
+
+		return {
+			img: token.image,
+			name: token.name,
+			symbol: token.ticker,
+			description: token.description,
+			address: token.address,
+			creator: {
+				address: token.creator?.address || '',
+				username: token.creator?.username || '',
+			},
+			marketCap: token.marketCapInBone,
+			bondingCurveStatus: token.bondingCurve,
 		}
 	}
 }

@@ -38,6 +38,40 @@ export class TokensController {
 		return this.tokensService.findAll(user)
 	}
 
+	// Create a api for list all newly created tokens but launched, add pagination
+	@Get()
+	@ApiOperation({ summary: 'Get all launched tokens' })
+	@ApiResponse({
+		status: 200,
+		description: 'Return all launched tokens.',
+		type: [Token],
+	})
+	findAllLaunched() {
+		return this.tokensService.findAllLaunched()
+	}
+
+	@Get('/random-token')
+	@ApiOperation({ summary: 'Get a random token' })
+	@ApiResponse({
+		status: 200,
+		description: 'Return a random token.',
+		type: Token,
+	})
+	findRandomToken() {
+		return this.tokensService.findRandomToken()
+	}
+
+	@Get('/recently-launched')
+	@ApiOperation({ summary: 'Get recently launched tokens' })
+	@ApiResponse({
+		status: 200,
+		description: 'Return recently launched tokens.',
+		type: RecentlyLaunchedResponseDto,
+	})
+	findRecentlyLaunched(@Query() queryParams: RecentlyLaunchedQueryDto) {
+		return this.tokensService.findRecentlyLaunched(queryParams)
+	}
+
 	@Get(':id')
 	@ApiOperation({ summary: 'Get a specific token by ID' })
 	@ApiResponse({ status: 200, description: 'Return the token.', type: Token })
@@ -56,28 +90,5 @@ export class TokensController {
 	@Auth()
 	launch(@Param('id') id: string, @UserInfo() user: User) {
 		return this.tokensService.launch(id, user)
-	}
-
-	// Create a api for list all newly created tokens but launched, add pagination
-	@Get()
-	@ApiOperation({ summary: 'Get all launched tokens' })
-	@ApiResponse({
-		status: 200,
-		description: 'Return all launched tokens.',
-		type: [Token],
-	})
-	findAllLaunched() {
-		return this.tokensService.findAllLaunched()
-	}
-
-	@Get('/recently-launched')
-	@ApiOperation({ summary: 'Get recently launched tokens' })
-	@ApiResponse({
-		status: 200,
-		description: 'Return recently launched tokens.',
-		type: RecentlyLaunchedResponseDto,
-	})
-	findRecentlyLaunched(@Query() queryParams: RecentlyLaunchedQueryDto) {
-		return this.tokensService.findRecentlyLaunched(queryParams)
 	}
 }
