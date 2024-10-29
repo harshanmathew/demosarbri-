@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { Transform } from 'class-transformer'
 import { IsNumber, IsOptional, IsString, Min } from 'class-validator'
 
 export class RecentlyLaunchedQueryDto {
@@ -11,6 +12,7 @@ export class RecentlyLaunchedQueryDto {
 	@IsOptional()
 	@IsNumber()
 	@Min(1)
+	@Transform(({ value }) => Number.parseInt(value))
 	page?: number
 
 	@ApiProperty({
@@ -22,6 +24,7 @@ export class RecentlyLaunchedQueryDto {
 	@IsOptional()
 	@IsNumber()
 	@Min(1)
+	@Transform(({ value }) => Number.parseInt(value))
 	limit?: number
 
 	@ApiProperty({
