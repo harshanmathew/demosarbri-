@@ -72,14 +72,6 @@ export class TokensController {
 		return this.tokensService.findRecentlyLaunched(queryParams)
 	}
 
-	@Get(':id')
-	@ApiOperation({ summary: 'Get a specific token by ID' })
-	@ApiResponse({ status: 200, description: 'Return the token.', type: Token })
-	@Auth()
-	findOne(@Param('id') id: string, @UserInfo() user: User) {
-		return this.tokensService.findOne(id, user)
-	}
-
 	@Put(':id/launch')
 	@ApiOperation({ summary: 'Launch a token' })
 	@ApiResponse({
@@ -87,8 +79,11 @@ export class TokensController {
 		description: 'The token has been successfully launched.',
 		type: Token,
 	})
-	@Auth()
-	launch(@Param('id') id: string, @UserInfo() user: User) {
-		return this.tokensService.launch(id, user)
+
+	@Get(':address')
+	@ApiOperation({ summary: 'Get a specific token by address' })
+	@ApiResponse({ status: 200, description: 'Return the token.', type: Token })
+	findOne(@Param('address') address: string, @UserInfo() user: User) {
+		return this.tokensService.findOne(address)
 	}
 }

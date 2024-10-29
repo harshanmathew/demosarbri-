@@ -8,6 +8,7 @@ import { Model } from 'mongoose'
 import { User } from 'src/users/schemas/user.schemas'
 import { RecentlyLaunchedQueryDto } from 'src/ws-updates/dto/recently-launched-query.dto'
 import { TokenDto } from 'src/ws-updates/dto/recently-launched-response.dto'
+import { getAddress } from 'viem'
 import { CreateTokenDto } from './dto/create-token.dto'
 import { Token, TokenDocument } from './schemas/token.schema'
 
@@ -23,9 +24,7 @@ export class TokensService {
 			creator: user._id,
 			launched: false,
 		})
-		createdToken.tokenSupply = (
-			BigInt(createTokenDto.tokenSupply) * BigInt(10 ** 18)
-		).toString()
+
 		return createdToken.save()
 	}
 
@@ -33,23 +32,13 @@ export class TokensService {
 		return this.tokenModel.find({ creator: user._id }).exec()
 	}
 
-	async findOne(id: string, user: User): Promise<Token> {
+	async findOne(address: string): Promise<Token> {
 		const token = await this.tokenModel
-			.findOne({ _id: id, creator: user._id })
+			.findOne({ address: getAddress(address) })
 			.exec()
 		if (!token) {
-			throw new NotFoundException(`Token with ID "${id}" not found`)
+			throw new NotFoundException(`Token with Address: "${address}" not found`)
 		}
-		return token
-	}
-
-	async launch(id: string, user: User): Promise<Token> {
-		const token = await this.findOne(id, user)
-		if (token.launched) {
-			throw new ForbiddenException('Token is already launched')
-		}
-		token.launched = true
-		await this.tokenModel.findByIdAndUpdate(token._id, { launched: true })
 		return token
 	}
 
