@@ -5,6 +5,8 @@ import {
 	IsNumber,
 	IsOptional,
 	IsString,
+	Max,
+	Min,
 } from 'class-validator'
 
 export class CreateTokenDto {
@@ -30,9 +32,11 @@ export class CreateTokenDto {
 	@IsString()
 	image: string
 
-	@ApiProperty({ example: '1000000' })
+	@ApiProperty({ example: 1000000 })
 	@IsNumber()
-	tokenSupply: string
+	@Min(1000)
+	@Max(100000000000)
+	tokenSupply: number
 
 	@ApiPropertyOptional({ example: 1000 })
 	@IsNumber()

@@ -23,6 +23,9 @@ export class TokensService {
 			creator: user._id,
 			launched: false,
 		})
+		createdToken.tokenSupply = (
+			BigInt(createTokenDto.tokenSupply) * BigInt(10 ** 18)
+		).toString()
 		return createdToken.save()
 	}
 
