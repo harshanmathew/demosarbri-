@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Patch, UseGuards } from '@nestjs/common'
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	Patch,
+	UseGuards,
+} from '@nestjs/common'
 import {
 	ApiBearerAuth,
 	ApiBody,
@@ -52,5 +60,25 @@ export class MeController {
 	@ApiResponse({ status: 401, description: 'Unauthorized.' })
 	removeMe(@UserInfo() user: User) {
 		return this.usersService.remove(user.id)
+	}
+
+	@Get('username/:username')
+	@ApiOperation({ summary: 'Check if username is available' })
+	@ApiResponse({
+		status: 200,
+		description: 'Returns whether the username is available',
+		schema: {
+			type: 'object',
+			properties: {
+				available: {
+					type: 'boolean',
+					description: 'True if username is available, false otherwise',
+				},
+			},
+		},
+	})
+	async checkUsernameAvailability(@Param('username') username: string) {
+		const isAvailable = await this.usersService.isUsernameAvailable(username)
+		return { available: isAvailable }
 	}
 }

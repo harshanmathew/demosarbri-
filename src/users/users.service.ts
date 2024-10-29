@@ -85,4 +85,9 @@ export class UsersService {
 		}
 		return user
 	}
+
+	async isUsernameAvailable(username: string): Promise<boolean> {
+		const user = await this.findByUsername(username)
+		return user === null
+	}
 }
