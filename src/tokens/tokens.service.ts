@@ -119,7 +119,7 @@ export class TokensService {
 		}
 	}
 
-	async findRandomToken(): Promise<TokenDto> {
+	async findRandomToken(): Promise<{ address: string }> {
 		const count = await this.tokenModel.countDocuments({
 			launched: true,
 			graduated: false,
@@ -131,17 +131,7 @@ export class TokensService {
 			.exec()
 
 		return {
-			img: token.image,
-			name: token.name,
-			symbol: token.ticker,
-			description: token.description,
 			address: token.address,
-			creator: {
-				address: token.creator?.address || '',
-				username: token.creator?.username || '',
-			},
-			marketCap: token.marketCapInBone,
-			bondingCurveStatus: token.bondingCurve,
 		}
 	}
 }

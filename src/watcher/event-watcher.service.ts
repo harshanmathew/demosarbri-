@@ -36,7 +36,7 @@ export class EventWatcherService implements OnModuleInit {
 		this.queueEvents.setMaxListeners(30)
 	}
 	async onModuleInit() {
-		//await this.startWatching()
+		await this.startWatching()
 	}
 
 	async startWatching() {

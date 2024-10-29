@@ -207,7 +207,7 @@ export class EventProcessorService {
 	// 	await this.flushPendingUpdates()
 	// }
 
-	//@Cron(CronExpression.EVERY_5_SECONDS)
+	@Cron(CronExpression.EVERY_5_SECONDS)
 	async processEvents() {
 		if (this.isProcessing) {
 			console.log('Already processing events')
