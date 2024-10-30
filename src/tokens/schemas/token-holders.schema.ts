@@ -9,13 +9,13 @@ export type TokenHoldersDocument = TokenHolders & Document
 export class TokenHolders extends Document {
 	@Prop({
 		required: true,
-		ref: 'Tokens',
+		ref: 'Token',
 		type: Types.ObjectId,
 		index: true,
 	})
 	token: Types.ObjectId | Token
 
-	@Prop({ required: true, ref: 'Users', type: Types.ObjectId, index: true })
+	@Prop({ required: true, ref: 'User', type: Types.ObjectId, index: true })
 	holder: Types.ObjectId | User
 
 	@Prop({ required: true, type: String, default: '0' })

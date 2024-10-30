@@ -61,6 +61,16 @@ export class TokensController {
 		return this.tokensService.findRandomToken()
 	}
 
+	@Get('/latest-activity')
+	@ApiOperation({ summary: 'Get the latest activity' })
+	@ApiResponse({
+		status: 200,
+		description: 'Return the latest activity.',
+	})
+	findLatestActivity() {
+		return this.tokensService.findLatestActivity()
+	}
+
 	@Get('/recently-launched')
 	@ApiOperation({ summary: 'Get recently launched tokens' })
 	@ApiResponse({
@@ -70,6 +80,26 @@ export class TokensController {
 	})
 	findRecentlyLaunched(@Query() queryParams: RecentlyLaunchedQueryDto) {
 		return this.tokensService.findRecentlyLaunched(queryParams)
+	}
+
+	@Get(':tokenId/holders')
+	@ApiOperation({ summary: 'Get all token holders' })
+	@ApiResponse({
+		status: 200,
+		description: 'Return all token holders.',
+	})
+	findAllHolders(@Param('tokenId') tokenId: string) {
+		return this.tokensService.findAllHolders(tokenId)
+	}
+
+	@Get(':tokenId/trades')
+	@ApiOperation({ summary: 'Get all token trades' })
+	@ApiResponse({
+		status: 200,
+		description: 'Return all token trades.',
+	})
+	findAllTrades(@Param('tokenId') tokenId: string) {
+		return this.tokensService.findAllTrades(tokenId)
 	}
 
 	@Get(':address')

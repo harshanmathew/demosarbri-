@@ -539,17 +539,18 @@ export class EventProcessorService {
 			timestamp: event.timestamp,
 		})
 		await userActivity.save()
-		this.wsUpdatesGateway.emitEvent('tokenLaunched', {
+		this.wsUpdatesGateway.broadcastPublicUpdate('tokenLaunched', {
 			address: token.address,
 			creator: {
 				address: creator.address,
-				_id: creator._id,
 				username: creator.username,
+				profileImage: creator.profileImage,
 			},
 			name: token.name,
 			ticker: token.ticker,
 			tokenSupply: token.tokenSupply,
 			bondingCurve: token.bondingCurve,
+			totalRaisedInBone: token.totalRaisedInBone,
 			twitterLink: token.twitterLink,
 			telegramLink: token.telegramLink,
 			websiteLink: token.websiteLink,
@@ -634,6 +635,62 @@ export class EventProcessorService {
 			})
 			await newTokenHolders.save()
 		}
+
+		this.wsUpdatesGateway.broadcastPublicUpdate('trade', {
+			token: {
+				address: token.address,
+				name: token.name,
+				ticker: token.ticker,
+				image: token.image,
+			},
+			trader: {
+				address: user.address,
+				username: user.username,
+				profileImage: user.profileImage,
+			},
+			boneAmount: Number(boneAmount / BigInt(10 ** 18)).toFixed(2),
+			tokenAmount: Number(tokenAmount / BigInt(10 ** 18)).toFixed(2),
+			type,
+			timestamp,
+			txHash,
+		})
+
+		this.wsUpdatesGateway.broadcastTokenUpdate(token.address, 'trade', {
+			trader: {
+				address: user.address,
+				username: user.username,
+				profileImage: user.profileImage,
+			},
+			boneAmount: Number(boneAmount / BigInt(10 ** 18)).toFixed(2),
+			tokenAmount: Number(tokenAmount / BigInt(10 ** 18)).toFixed(2),
+			type,
+			timestamp,
+			txHash,
+		})
+		const tokenHoldersList = await this.tokenHoldersModel
+			.find({
+				token: token._id,
+			})
+			.populate<{ holder: UserDocument }>('holder')
+
+		this.wsUpdatesGateway.broadcastTokenUpdate(
+			token.address,
+			'tokenHolders',
+			tokenHoldersList.map(tokenHolder => ({
+				holder: {
+					address: tokenHolder.holder.address,
+					username: tokenHolder.holder.username,
+					profileImage: tokenHolder.holder.profileImage,
+				},
+				balance: tokenHolder.balance,
+			})),
+		)
+
+		this.wsUpdatesGateway.broadcastTokenUpdate(token.address, 'tokenUpdate', {
+			totalRaisedInBone: token.totalRaisedInBone,
+			tokenPriceInBone: token.tokenPriceInBone,
+			marketCapInBone: token.marketCapInBone,
+		})
 	}
 
 	private async handleCompleteSharbiFunEvent(
@@ -684,6 +741,10 @@ export class EventProcessorService {
 			token.pairAddress = getAddress(eventData.args.pairAddress)
 			await token.save()
 		}
+
+		this.wsUpdatesGateway.broadcastTokenUpdate(token.address, 'graduate', {
+			pairAddress: token.pairAddress,
+		})
 	}
 
 	@Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)

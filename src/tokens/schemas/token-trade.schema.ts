@@ -10,13 +10,13 @@ export type TokenTradesDocument = TokenTrades & Document
 export class TokenTrades extends Document {
 	@Prop({
 		required: true,
-		ref: 'Tokens',
+		ref: 'Token',
 		type: Types.ObjectId,
 		index: true,
 	})
 	token: Types.ObjectId | Token
 
-	@Prop({ required: true, ref: 'Users', type: Types.ObjectId, index: true })
+	@Prop({ required: true, ref: 'User', type: Types.ObjectId, index: true })
 	trader: Types.ObjectId | User
 
 	@Prop({ required: true, type: Number })

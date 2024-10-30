@@ -7,7 +7,7 @@ export type UserActivityDocument = UserActivity & Document
 
 @Schema({ timestamps: true })
 export class UserActivity {
-	@Prop({ required: true, ref: 'Users', type: Types.ObjectId, index: true })
+	@Prop({ required: true, ref: 'User', type: Types.ObjectId, index: true })
 	user: Types.ObjectId | User
 
 	@Prop({ enum: ['created', 'buy', 'sell'] })
@@ -21,7 +21,7 @@ export class UserActivity {
 
 	@Prop({
 		required: true,
-		ref: 'Tokens',
+		ref: 'Token',
 		type: Types.ObjectId,
 		index: true,
 	})

@@ -5,17 +5,32 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import {
+	UserActivity,
+	UserActivityDocument,
+} from 'src/users/schemas/user-activity.schema'
 import { User } from 'src/users/schemas/user.schemas'
 import { RecentlyLaunchedQueryDto } from 'src/ws-updates/dto/recently-launched-query.dto'
 import { TokenDto } from 'src/ws-updates/dto/recently-launched-response.dto'
 import { getAddress } from 'viem'
 import { CreateTokenDto } from './dto/create-token.dto'
+import {
+	TokenHolders,
+	TokenHoldersDocument,
+} from './schemas/token-holders.schema'
+import { TokenTrades, TokenTradesDocument } from './schemas/token-trade.schema'
 import { Token, TokenDocument } from './schemas/token.schema'
 
 @Injectable()
 export class TokensService {
 	constructor(
 		@InjectModel(Token.name) private tokenModel: Model<TokenDocument>,
+		@InjectModel(UserActivity.name)
+		private userActivityModel: Model<UserActivityDocument>,
+		@InjectModel(TokenHolders.name)
+		private tokenHoldersModel: Model<TokenHoldersDocument>,
+		@InjectModel(TokenTrades.name)
+		private tokenTradesModel: Model<TokenTradesDocument>,
 	) {}
 
 	async create(createTokenDto: CreateTokenDto, user: User): Promise<Token> {
@@ -133,5 +148,34 @@ export class TokensService {
 		return {
 			address: token.address,
 		}
+	}
+
+	async findLatestActivity() {
+		return this.userActivityModel
+			.find()
+			.sort({ createdAt: -1 })
+			.populate({
+				path: 'user',
+				select: 'username address profileImage',
+			})
+			.populate({
+				path: 'token',
+				select: 'name ticker image address',
+			})
+			.select(['user', 'token', 'type', 'boneAmount', 'tokenAmount'])
+			.limit(10)
+			.exec()
+	}
+
+	async findAllHolders(tokenId: string) {
+		return this.tokenHoldersModel
+			.find({ token: tokenId })
+			.populate<User>('holder', 'username address profileImage')
+	}
+
+	async findAllTrades(tokenId: string) {
+		return this.tokenTradesModel
+			.find({ token: tokenId })
+			.populate<User>('trader', 'username address profileImage')
 	}
 }
