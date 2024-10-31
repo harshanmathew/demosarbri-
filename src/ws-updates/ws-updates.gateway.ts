@@ -82,7 +82,10 @@ export class WsUpdatesGateway {
 			}
 		}
 
-		if (this.userSubscriptions.has(getAddress(client.user.address))) {
+		if (
+			client?.user?.address &&
+			this.userSubscriptions.has(getAddress(client.user.address))
+		) {
 			this.userSubscriptions.get(getAddress(client.user.address)).delete(client)
 		}
 	}
