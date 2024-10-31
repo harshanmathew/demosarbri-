@@ -62,8 +62,17 @@ export class UploadsController {
 			},
 		},
 	})
-	// now limited to one file only.
-	@UseInterceptors(FilesInterceptor('files', 1))
+	@ApiResponse({
+		status: 413,
+		description: 'File too large - maximum size is 8MB',
+	})
+	@UseInterceptors(
+		FilesInterceptor('files', 1, {
+			limits: {
+				fileSize: 8 * 1024 * 1024, // 8MB in bytes
+			},
+		}),
+	)
 	async uploadFile(
 		@UploadedFiles() files: Express.Multer.File[],
 	): Promise<any> {
