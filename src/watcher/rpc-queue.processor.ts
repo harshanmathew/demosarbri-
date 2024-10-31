@@ -6,23 +6,16 @@ import { http, Chain, PublicClient, createPublicClient } from 'viem'
 import { shibarium, shibariumTestnet } from 'viem/chains'
 
 const RPC_API_KEY = [
-	'isF0YD1gbZdQGdoirWF46Cs5icWN7jp14fqBlVbe',
-	'T5Rxu2Oat31gjBlTQk1nN2Uj3lfbYUxraRwq4IAZ',
-	'9iL3UFp77N9xMXUnlWY0y8w1xAPmLooy3K9fDkKv',
-	'RNl68kgSm77w0g81xWksgd8Mby0wWWdSnAOWRh10',
-	'C604435KCD4AaSuiM04ie1vVqxJvjLTm5IFE54z4',
-	'g4IdgqRWrz1kOKUTS0VshlsCD5SKid1aqUraV3Dc',
-	'saA74oPT9a7G25u37oJgE9E7mdQ21y3x93pPZF36',
-	'8osaAj90yV38KnJgVkPyQ41mVHNbjs2y8C5q4ZoB',
-	'HDP7hG9SAK4LIHwb7LnAn35Rs2T5EGgs8gx0GnZV',
-	// 'OzVBmpvejn1MxffJhucCp210fmfAYlPpCmmavqT0',
-	// 'lNSt3ZSjzU9E0gPFAaeki2qHCrsfWWMU6YIlEhmS',
-	// 'Rdz5FM7EeG3aBmNT8GDXA78kyHn5s10D8ZconFrM',
 	// 'Ivjsoo37oa84RwN66ZYbX8Og9ptOHmXo2eXcJgUa',
 	// '2VID5SVu3O9l7RTivlhM583DnNF1UU481UUs2Lke',
 	// 'yrAmz2hZxa7HhtKb8lXox85UYTAEOifC97qSdQEi',
 	// 'steAryWL7a33OTJTk4s847hE85cyWnn5qbgLSec8',
 	// '2WnfQrNEyq2SF6TFwwFsW3SYkrGiZ0Sq6FR8IcIG',
+	'KC4nViyBhU8LGRo0dMDHZ9Y9B0JPlNE6MxNJc4Hf',
+	'3esbQOZRvy8rgJRLFsJ2hEFae9JEGWf9y8h4d6D9',
+	'x0fSgYdfJ519vNWPq8xT590cfiKivxW27T8QGzFP',
+	'UO39Mg2Nrm82hF4jlyjqS7tyxD9lAcph3dm2CmrF',
+	'6V4SGW84FN43k0QYdSaT2p8QhynV6FJ5Iq8HQi7h',
 ]
 @Processor('rpc-requests', {
 	limiter: {
