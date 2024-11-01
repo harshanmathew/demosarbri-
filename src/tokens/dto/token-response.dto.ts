@@ -1,15 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { Types } from 'mongoose'
+import { User } from 'src/users/schemas/user.schemas'
 import { Token } from '../schemas/token.schema'
 
-class UserDto {
+export class UserDto {
 	@ApiProperty()
 	address: string
 
 	@ApiProperty()
-	username: string
+	username?: string
 
 	@ApiProperty()
-	profileImage: string
+	profileImage?: string
 }
 
 export class TokenHoldersDto {
@@ -71,7 +73,85 @@ export class TokenTradesResponseDto {
 	currentPage: number
 }
 
-export class TokenWithVolumeDto extends Token {
-	@ApiProperty()
+export class TokenWithVolumeDto {
+	@ApiProperty({ type: String })
+	_id: Types.ObjectId
+
+	@ApiProperty({ type: String })
+	name: string
+
+	@ApiProperty({ type: String })
+	ticker: string
+
+	@ApiProperty({ type: String })
+	address: string
+
+	@ApiProperty({ type: String })
+	description: string
+
+	@ApiProperty({ type: String })
+	image: string
+
+	@ApiProperty({ type: String })
+	tokenSupply: string
+
+	@ApiProperty({ type: Number })
+	initialBuyAmount: number
+
+	@ApiProperty({ enum: ['beginner', 'pro'] })
+	bondingCurve: 'beginner' | 'pro'
+
+	@ApiProperty({ type: String })
+	twitterLink: string
+
+	@ApiProperty({ type: String })
+	telegramLink: string
+
+	@ApiProperty({ type: String })
+	websiteLink: string
+
+	@ApiProperty({ enum: ['yes', 'no'] })
+	donate: 'yes' | 'no'
+
+	@ApiProperty({ type: UserDto })
+	creator: UserDto
+
+	@ApiProperty({ type: String })
+	transactionHash: string
+
+	@ApiProperty({ type: String })
+	marketCapInBoneBig: string
+
+	@ApiProperty({ type: Number })
+	marketCapInBone: number
+
+	@ApiProperty({ type: String })
+	totalRaisedInBoneBig: string
+
+	@ApiProperty({ type: Number })
+	totalRaisedInBone: number
+
+	@ApiProperty({ type: String })
+	tokenPriceInBoneBig: string
+
+	@ApiProperty({ type: Number })
+	tokenPriceInBone: number
+
+	@ApiProperty({ type: String })
+	virtualY: string
+
+	@ApiProperty({ type: String })
+	virtualX: string
+
+	@ApiProperty({ type: String })
+	pairAddress: string
+
+	@ApiProperty({ type: Boolean })
+	launched: boolean
+
+	@ApiProperty({ type: Boolean })
+	graduated: boolean
+
+	@ApiProperty({ type: Number })
 	volume24: number
 }

@@ -35,21 +35,27 @@ export class RpcRequestProcessor extends WorkerHost {
 
 	constructor(private readonly configService: ConfigService) {
 		super()
+		this.clients.push(
+			createPublicClient({
+				chain: shibarium,
+				transport: http('http://139.84.221.33:8545/jwinlAc0uq66GY'),
+			}) as any,
+		)
 		// biome-ignore lint/complexity/noForEach: <explanation>
-		RPC_API_KEY.forEach(apiKey => {
-			let chain: Chain = shibariumTestnet
-			let rpcUrl = `https://api.shibrpc.com/puppynet/${apiKey}`
-			if (this.configService.get<string>('CHAIN') === 'mainnet') {
-				chain = shibarium
-				rpcUrl = `https://api.shibrpc.com/shibarium/${apiKey}`
-			}
-			this.clients.push(
-				createPublicClient({
-					chain,
-					transport: http(rpcUrl),
-				}) as any,
-			)
-		})
+		// RPC_API_KEY.forEach(apiKey => {
+		// 	let chain: Chain = shibariumTestnet
+		// 	let rpcUrl = `https://api.shibrpc.com/puppynet/${apiKey}`
+		// 	if (this.configService.get<string>('CHAIN') === 'mainnet') {
+		// 		chain = shibarium
+		// 		rpcUrl = `https://api.shibrpc.com/shibarium/${apiKey}`
+		// 	}
+		// 	this.clients.push(
+		// 		createPublicClient({
+		// 			chain,
+		// 			transport: http(rpcUrl),
+		// 		}) as any,
+		// 	)
+		// })
 	}
 
 	async process(job: Job<{ method: string; params: any[] }>): Promise<any> {

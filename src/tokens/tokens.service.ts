@@ -15,7 +15,7 @@ import { TokenDto } from 'src/ws-updates/dto/recently-launched-response.dto'
 import { getAddress } from 'viem'
 import { CreateTokenDto } from './dto/create-token.dto'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
-import { TokenWithVolumeDto } from './dto/token-response.dto'
+import { TokenWithVolumeDto, UserDto } from './dto/token-response.dto'
 import {
 	TokenHolders,
 	TokenHoldersDocument,
@@ -52,11 +52,11 @@ export class TokensService {
 	async findOne(address: string): Promise<TokenWithVolumeDto> {
 		const token = await this.tokenModel
 			.findOne({ address: getAddress(address) })
-			.populate({
+			.populate<UserDto>({
 				path: 'creator',
 				select: 'username address profileImage',
 			})
-			.exec()
+			.lean()
 		if (!token) {
 			throw new NotFoundException(`Token with Address: "${address}" not found`)
 		}
