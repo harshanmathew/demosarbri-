@@ -6,16 +6,21 @@ import { http, Chain, PublicClient, createPublicClient } from 'viem'
 import { shibarium, shibariumTestnet } from 'viem/chains'
 
 const RPC_API_KEY = [
-	'KC4nViyBhU8LGRo0dMDHZ9Y9B0JPlNE6MxNJc4Hf',
-	'3esbQOZRvy8rgJRLFsJ2hEFae9JEGWf9y8h4d6D9',
-	'x0fSgYdfJ519vNWPq8xT590cfiKivxW27T8QGzFP',
-	'UO39Mg2Nrm82hF4jlyjqS7tyxD9lAcph3dm2CmrF',
-	'6V4SGW84FN43k0QYdSaT2p8QhynV6FJ5Iq8HQi7h',
-	'C604435KCD4AaSuiM04ie1vVqxJvjLTm5IFE54z4',
-	'RNl68kgSm77w0g81xWksgd8Mby0wWWdSnAOWRh10',
-	'isF0YD1gbZdQGdoirWF46Cs5icWN7jp14fqBlVbe',
-	'T5Rxu2Oat31gjBlTQk1nN2Uj3lfbYUxraRwq4IAZ',
-	'9iL3UFp77N9xMXUnlWY0y8w1xAPmLooy3K9fDkKv',
+	// 'KC4nViyBhU8LGRo0dMDHZ9Y9B0JPlNE6MxNJc4Hf',
+	// '3esbQOZRvy8rgJRLFsJ2hEFae9JEGWf9y8h4d6D9',
+	// 'x0fSgYdfJ519vNWPq8xT590cfiKivxW27T8QGzFP',
+	// 'UO39Mg2Nrm82hF4jlyjqS7tyxD9lAcph3dm2CmrF',
+	// '6V4SGW84FN43k0QYdSaT2p8QhynV6FJ5Iq8HQi7h',
+	// 'C604435KCD4AaSuiM04ie1vVqxJvjLTm5IFE54z4',
+	// 'RNl68kgSm77w0g81xWksgd8Mby0wWWdSnAOWRh10',
+	// 'isF0YD1gbZdQGdoirWF46Cs5icWN7jp14fqBlVbe',
+	// 'T5Rxu2Oat31gjBlTQk1nN2Uj3lfbYUxraRwq4IAZ',
+	// '9iL3UFp77N9xMXUnlWY0y8w1xAPmLooy3K9fDkKv',
+	'rZRnYXWIMF4szEXr68tcj5jPttRyTGc03BWxuWcy',
+	'AO2A0XDenFvqI2ANWFP75ohqQ7O66mzeuM2Q6m00',
+	'QkxB0lOnrV2DAVhcx5mvp81GLZmaMMV83ZfTLsWW',
+	'YQ9392d1g59dqwEBeAbKJ1IE0e0FFiCz9C6ho3et',
+	'AmbGuJWTvjwinlAc0uq66GY3otDEg2x6xQCpFfo0',
 ]
 @Processor('rpc-requests', {
 	limiter: {
