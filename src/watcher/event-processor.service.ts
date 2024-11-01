@@ -550,6 +550,7 @@ export class EventProcessorService {
 			ticker: token.ticker,
 			tokenSupply: token.tokenSupply,
 			bondingCurve: token.bondingCurve,
+			marketCap: token.marketCapInBone,
 			totalRaisedInBone: token.totalRaisedInBone,
 			twitterLink: token.twitterLink,
 			telegramLink: token.telegramLink,

@@ -4,6 +4,25 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  array-flatten: npm:@socketregistry/array-flatten@^1
+  es-define-property: npm:@socketregistry/es-define-property@^1
+  function-bind: npm:@socketregistry/function-bind@^1
+  gopd: npm:@socketregistry/gopd@^1
+  has-property-descriptors: npm:@socketregistry/has-property-descriptors@^1
+  has-proto: npm:@socketregistry/has-proto@^1
+  has-symbols: npm:@socketregistry/has-symbols@^1
+  hasown: npm:@socketregistry/hasown@^1
+  is-core-module: npm:@socketregistry/is-core-module@^1
+  isarray: npm:@socketregistry/isarray@^1
+  object-assign: npm:@socketregistry/object-assign@^1
+  path-parse: npm:@socketregistry/path-parse@^1
+  safe-buffer: npm:@socketregistry/safe-buffer@^1
+  safer-buffer: npm:@socketregistry/safer-buffer@^1
+  set-function-length: npm:@socketregistry/set-function-length@^1
+  side-channel: npm:@socketregistry/side-channel@^1
+  typedarray: npm:@socketregistry/typedarray@^1
+
 importers:
 
   .:
@@ -16,7 +35,7 @@ importers:
         version: 3.0.3(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(axios@1.7.7)(rxjs@7.8.1)
       '@nestjs/bullmq':
         specifier: ^10.2.1
-        version: 10.2.1(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(bullmq@5.20.0)
+        version: 10.2.1(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)(bullmq@5.20.0)
       '@nestjs/common':
         specifier: ^10.0.0
         version: 10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -34,7 +53,7 @@ importers:
         version: 2.0.5(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
       '@nestjs/mongoose':
         specifier: ^10.0.10
-        version: 10.0.10(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(mongoose@8.7.1)(rxjs@7.8.1)
+        version: 10.0.10(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)(mongoose@8.7.1)(rxjs@7.8.1)
       '@nestjs/passport':
         specifier: ^10.0.3
         version: 10.0.3(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(passport@0.7.0)
@@ -46,10 +65,10 @@ importers:
         version: 10.4.5(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/websockets@10.4.5)(rxjs@7.8.1)
       '@nestjs/schedule':
         specifier: ^4.1.1
-        version: 4.1.1(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))
+        version: 4.1.1(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)
       '@nestjs/swagger':
         specifier: ^7.4.2
-        version: 7.4.2(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
+        version: 7.4.2(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
       '@nestjs/websockets':
         specifier: ^10.4.5
         version: 10.4.5(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)(@nestjs/platform-socket.io@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -113,7 +132,7 @@ importers:
         version: 10.1.4(chokidar@3.6.0)(typescript@5.6.3)
       '@nestjs/testing':
         specifier: ^10.0.0
-        version: 10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4))
+        version: 10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)(@nestjs/platform-express@10.4.4)
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.21
@@ -847,6 +866,66 @@ packages:
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
 
+  '@socketregistry/array-flatten@1.0.5':
+    resolution: {integrity: sha512-UjH1HMUq9csx1SdkHbMQr050mLplRX+5DOxRwigg+q1PuITjZpHs5KtnRapWQbFhNjjAyBwHXBvGHCMHwlb5AA==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/es-define-property@1.0.5':
+    resolution: {integrity: sha512-zipl+Zs/75Fjt7vE3RqbbDNfdIFsvsmd2wLmwoxI1Z/ID28j5dp7ZzaMesQAQqK+zv24a4WTywQVg7f35E3rcw==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/function-bind@1.0.5':
+    resolution: {integrity: sha512-G7Z7yVdwQmO5FzNFqdPp8ZvLm9zk5lq7t3r+2IOzBcQVx/qgjYuYPo0fE+kzvQ7u5ApMret2wDnKbCfp4cqnjg==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/has-proto@1.0.5':
+    resolution: {integrity: sha512-z1tmi3xBR/DY40I4Zw8eHCCekWa3OoM7VHeXgSas11vLYPPGstHRMivDOlLzTrggHrLVnbQ25Xpf43TEdM6n0Q==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/has-symbols@1.0.5':
+    resolution: {integrity: sha512-Vxaly8XG4byS5lSwuv/cOlbFpQINJu4Ce32Ui58rlv+3OL+Eu8EEBHVGR8a0AMr/bOG6fMOWhx5H3CAkxVTbsA==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/hasown@1.0.5':
+    resolution: {integrity: sha512-xknlSx99HYF6t4cRLVMg9iW1eR8kKG92m/Yz7Bo9pntIpvLlKs3Rm+eCwEzTjp+NZacGTxG0T2IP/vGwGD2d8Q==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/is-core-module@1.0.5':
+    resolution: {integrity: sha512-ABHSA3p056nRvkH+xOIykNEuOt1yRlRN71BxioKalfyXdtxVFyG9JWi55CpWnYkSPUWe1i06HnWE6Ua3o5JXHg==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/isarray@1.0.5':
+    resolution: {integrity: sha512-ShtX9jbnTiEl2sXAjCS02ihrjiEStKleX4NgOxUu977jX/PRSS7sGuM2ssN3vCeuzmLphzeCeIXExxR5dcw8bA==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/object-assign@1.0.3':
+    resolution: {integrity: sha512-VFUMXtgcqb+A05izEwgTepGsf0rm9UMPTa2KyF5xPiaSuj6nhpZ8+aFQKjJ3NsoZaIGzS2hJfxeVuLV/Zt4eag==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/path-parse@1.0.5':
+    resolution: {integrity: sha512-e4rAhNrpgWJGGBU3VzmKCV1OBbEiT7h+EwzEd1iwM2rY8C9VrBs0FFFvfOxPkkWm6BXzilpnMgIjqtoBw/dVUg==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/safe-buffer@1.0.5':
+    resolution: {integrity: sha512-wOsct2TbdGKvXHRJGKgwWLvs4HqVCVJ/8/saHxjnbR/6uIdb/XYGJcwb+P61SRrW5695bAsIrYFJZbyhTsqLLQ==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/safer-buffer@1.0.5':
+    resolution: {integrity: sha512-x6W5FZJwngd3UqOA0TXucXuD/RdGm4NHvnDYC2topSlfyA2vtTff9lcXpuQqzi/TxxlHEfYc0toRA+VDQSdfxw==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/set-function-length@1.0.5':
+    resolution: {integrity: sha512-QtuipG5L+FLe7gbWBtQnbGAlIA9cjih6WYjrM2vVimSsV4esy/6VepqqYoddSTYka/iL0ynQpR3fRSMsGi9IJA==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/side-channel@1.0.5':
+    resolution: {integrity: sha512-5UgOtX5i0k5WBmNMSHvCoxC3XbRYFJwhAyN94LA2MSvBc/RGHuyjtKXY4j05LUwM/+UpRG5IqLWU/siyp3k+9w==}
+    engines: {node: '>=18.20.4'}
+
+  '@socketregistry/typedarray@1.0.5':
+    resolution: {integrity: sha512-52UUh8c5XLtjj6V9XZYS8BXVj819b7qa5XpSnP+X+pZaeThSDp04SMK0qEdUvQVk0ewDkMZbMJEmrqlCMcYzjQ==}
+    engines: {node: '>=18.20.4'}
+
   '@tsconfig/node10@1.0.11':
     resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
 
@@ -1191,9 +1270,6 @@ packages:
 
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
-
-  array-flatten@1.1.1:
-    resolution: {integrity: sha512-PCVAQswWemu6UdxsDFFX/+gVeYqKAod3D3UVm91jHwynguOwAvYPhx8nNlM++NqRcK6CxxpUafjmhIdKiHibqg==}
 
   array-timsort@1.0.3:
     resolution: {integrity: sha512-/+3GRL7dDAGEfM6TseQk/U+mi18TU2Ms9I3UlLdUMhz2hbvGNTKdj9xniwXfUqgYhHxRx0+8UnKkvlNwVU+cWQ==}
@@ -1548,10 +1624,6 @@ packages:
   defaults@1.0.4:
     resolution: {integrity: sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==}
 
-  define-data-property@1.1.4:
-    resolution: {integrity: sha512-rBMvIzlpA8v6E+SJZoo++HAYqsLrkg7MSfIinMPFhmkorw7X+dOXVJQs+QT69zGkzMyfDnIMN2Wid1+NbL3T+A==}
-    engines: {node: '>= 0.4'}
-
   delayed-stream@1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
     engines: {node: '>=0.4.0'}
@@ -1659,10 +1731,6 @@ packages:
 
   error-ex@1.3.2:
     resolution: {integrity: sha512-7dFHNmqeFSEt2ZBsCriorKnn3Z2pj+fd9kmI6QoWw4//DL+icEBfc0U7qJCisqrTsKTjw4fNFy2pW9OqStD84g==}
-
-  es-define-property@1.0.0:
-    resolution: {integrity: sha512-jxayLKShrEqqzJ0eumQbVhTYQM27CfT1T35+gCgDFoL82JLsXqTJ76zv6A0YLOgEnLUMvLzsDsGIrl8NFpT2gQ==}
-    engines: {node: '>= 0.4'}
 
   es-errors@1.3.0:
     resolution: {integrity: sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==}
@@ -1905,9 +1973,6 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
-  function-bind@1.1.2:
-    resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
-
   gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
     engines: {node: '>=6.9.0'}
@@ -1960,9 +2025,6 @@ packages:
     resolution: {integrity: sha512-jhIXaOzy1sb8IyocaruWSn1TjmnBVs8Ayhcy83rmxNJ8q2uWKCAj3CnJY+KpGSXCueAPc0i05kVvVKtP1t9S3g==}
     engines: {node: '>=10'}
 
-  gopd@1.0.1:
-    resolution: {integrity: sha512-d65bNlIadxvpb/A2abVdlqKqV563juRnZ1Wtk6s1sIR8uNsXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==}
-
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
@@ -1980,21 +2042,6 @@ packages:
   has-own-prop@2.0.0:
     resolution: {integrity: sha512-Pq0h+hvsVm6dDEa8x82GnLSYHOzNDt7f0ddFa3FqcQlgzEiptPqL+XrOJNavjOzSYiYWIrgeVYYgGlLmnxwilQ==}
     engines: {node: '>=8'}
-
-  has-property-descriptors@1.0.2:
-    resolution: {integrity: sha512-55JNKuIW+vq4Ke1BjOTjM2YctQIvCT7GFzHwmfZPGo5wnrgkid0YQtnAleFSqumZm4az3n2BS+erby5ipJdgrg==}
-
-  has-proto@1.0.3:
-    resolution: {integrity: sha512-SJ1amZAJUiZS+PhsVLf5tGydlaVB8EdFpaSO4gmiUKUOxk8qzn5AIy4ZeJUmh22znIdk/uMAUT2pl3FxzVUH+Q==}
-    engines: {node: '>= 0.4'}
-
-  has-symbols@1.0.3:
-    resolution: {integrity: sha512-l3LCuF6MgDNwTDKkdYGEihYjt5pRPbEg46rtlmnSPlUbgmB8LOIrKJbYYFBSbnPaJexMKtiPO8hmeRjRz2Td+A==}
-    engines: {node: '>= 0.4'}
-
-  hasown@2.0.2:
-    resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
-    engines: {node: '>= 0.4'}
 
   hexoid@1.0.0:
     resolution: {integrity: sha512-QFLV0taWQOZtvIRIAdBChesmogZrtuXvVWsFHZTk2SU+anspqZ2vMnoLg7IE1+Uk16N19APic1BuF8bC8c2m5g==}
@@ -2070,10 +2117,6 @@ packages:
     resolution: {integrity: sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==}
     engines: {node: '>=8'}
 
-  is-core-module@2.15.1:
-    resolution: {integrity: sha512-z0vtXSwucUJtANQWldhbtbt7BnL0vxiFjIdDLAatwhDYty2bad6s+rijD6Ri4YuYJubLzIJLUidCh09e1djEVQ==}
-    engines: {node: '>= 0.4'}
-
   is-extglob@2.1.1:
     resolution: {integrity: sha512-SbKbANkN603Vi4jEZv49LeVJMn4yGwsbzZworEoyEiutsN3nJYdbO36zfhGJ6QEDpOZIFkDtnq5JRxmvl3jsoQ==}
     engines: {node: '>=0.10.0'}
@@ -2109,9 +2152,6 @@ packages:
   is-unicode-supported@0.1.0:
     resolution: {integrity: sha512-knxG2q4UC3u8stRGyAVJCOdxFmv5DZiRcdlIaAQXAbSfJya+OhopNotLQrstBhququ4ZpuKbDc/8S6mgXgPFPw==}
     engines: {node: '>=10'}
-
-  isarray@1.0.0:
-    resolution: {integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==}
 
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
@@ -2693,17 +2733,9 @@ packages:
     resolution: {integrity: sha512-S48WzZW777zhNIrn7gxOlISNAqi9ZC/uQFnRdbeIHhZhCA6UqpkOT8T1G7BvfdgP4Er8gF4sUbaS0i7QvIfCWw==}
     engines: {node: '>=8'}
 
-  object-assign@4.1.1:
-    resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
-    engines: {node: '>=0.10.0'}
-
   object-hash@3.0.0:
     resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
     engines: {node: '>= 6'}
-
-  object-inspect@1.13.2:
-    resolution: {integrity: sha512-IRZSRuzJiynemAXPYtPe5BoI/RESNYR7TYm50MC5Mqbd3Jmw5y790sErYw3V6SryFJD64b74qQQs9wn5Bg/k3g==}
-    engines: {node: '>= 0.4'}
 
   ohash@1.1.4:
     resolution: {integrity: sha512-FlDryZAahJmEF3VR3w1KogSEdWX3WhA5GPakFx4J81kEAiHyLMpdLLElS8n8dfNadMgAne/MywcvmogzscVt4g==}
@@ -2788,9 +2820,6 @@ packages:
   path-key@3.1.1:
     resolution: {integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==}
     engines: {node: '>=8'}
-
-  path-parse@1.0.7:
-    resolution: {integrity: sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==}
 
   path-scurry@1.11.1:
     resolution: {integrity: sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==}
@@ -2976,15 +3005,6 @@ packages:
   rxjs@7.8.1:
     resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
 
-  safe-buffer@5.1.2:
-    resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
-
-  safe-buffer@5.2.1:
-    resolution: {integrity: sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==}
-
-  safer-buffer@2.1.2:
-    resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
-
   schema-utils@3.3.0:
     resolution: {integrity: sha512-pN/yOAvcC+5rQ5nERGuwrjLlYvLTbCibnZ1I7B1LaiAz9BRBlE9GMgE/eqV30P7aJQUf7Ddimy/RsbYO/GrVGg==}
     engines: {node: '>= 10.13.0'}
@@ -3009,10 +3029,6 @@ packages:
     resolution: {integrity: sha512-VqpjJZKadQB/PEbEwvFdO43Ax5dFBZ2UECszz8bQ7pi7wt//PWe1P6MN7eCnjsatYtBT6EuiClbjSWP2WrIoTw==}
     engines: {node: '>= 0.8.0'}
 
-  set-function-length@1.2.2:
-    resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
-    engines: {node: '>= 0.4'}
-
   setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
 
@@ -3023,10 +3039,6 @@ packages:
   shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
-
-  side-channel@1.0.6:
-    resolution: {integrity: sha512-fDW/EZ6Q9RiO8eFG8Hj+7u/oW+XrPTIChwCOM2+th2A6OblDtYYIpve9m+KvI9Z4C9qSEXlaGR6bTEYHReuglA==}
-    engines: {node: '>= 0.4'}
 
   sift@17.1.3:
     resolution: {integrity: sha512-Rtlj66/b0ICeFzYTuNvX/EF1igRbbnGSvEyT79McoZa/DeGhMyC5pWKOEsZKnpkqtSeovd5FL/bjHWC3CIIvCQ==}
@@ -3331,9 +3343,6 @@ packages:
   type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
     engines: {node: '>= 0.6'}
-
-  typedarray@0.0.6:
-    resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
 
   typescript@5.3.3:
     resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}
@@ -4129,15 +4138,15 @@ snapshots:
       axios: 1.7.7
       rxjs: 7.8.1
 
-  '@nestjs/bull-shared@10.2.1(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))':
+  '@nestjs/bull-shared@10.2.1(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)':
     dependencies:
       '@nestjs/common': 10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/core': 10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       tslib: 2.6.3
 
-  '@nestjs/bullmq@10.2.1(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(bullmq@5.20.0)':
+  '@nestjs/bullmq@10.2.1(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)(bullmq@5.20.0)':
     dependencies:
-      '@nestjs/bull-shared': 10.2.1(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))
+      '@nestjs/bull-shared': 10.2.1(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)
       '@nestjs/common': 10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/core': 10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       bullmq: 5.20.0
@@ -4219,7 +4228,7 @@ snapshots:
       class-transformer: 0.5.1
       class-validator: 0.14.1
 
-  '@nestjs/mongoose@10.0.10(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(mongoose@8.7.1)(rxjs@7.8.1)':
+  '@nestjs/mongoose@10.0.10(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)(mongoose@8.7.1)(rxjs@7.8.1)':
     dependencies:
       '@nestjs/common': 10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/core': 10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -4255,7 +4264,7 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@nestjs/schedule@4.1.1(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))':
+  '@nestjs/schedule@4.1.1(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)':
     dependencies:
       '@nestjs/common': 10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/core': 10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -4284,7 +4293,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@nestjs/swagger@7.4.2(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)':
+  '@nestjs/swagger@7.4.2(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)':
     dependencies:
       '@microsoft/tsdoc': 0.15.0
       '@nestjs/common': 10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -4299,7 +4308,7 @@ snapshots:
       class-transformer: 0.5.1
       class-validator: 0.14.1
 
-  '@nestjs/testing@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4))':
+  '@nestjs/testing@10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.4)(@nestjs/platform-express@10.4.4)':
     dependencies:
       '@nestjs/common': 10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/core': 10.4.4(@nestjs/common@10.4.4(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/platform-express@10.4.4)(@nestjs/websockets@10.4.5)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -4374,6 +4383,36 @@ snapshots:
       '@sinonjs/commons': 3.0.1
 
   '@socket.io/component-emitter@3.1.2': {}
+
+  '@socketregistry/array-flatten@1.0.5': {}
+
+  '@socketregistry/es-define-property@1.0.5': {}
+
+  '@socketregistry/function-bind@1.0.5': {}
+
+  '@socketregistry/has-proto@1.0.5': {}
+
+  '@socketregistry/has-symbols@1.0.5': {}
+
+  '@socketregistry/hasown@1.0.5': {}
+
+  '@socketregistry/is-core-module@1.0.5': {}
+
+  '@socketregistry/isarray@1.0.5': {}
+
+  '@socketregistry/object-assign@1.0.3': {}
+
+  '@socketregistry/path-parse@1.0.5': {}
+
+  '@socketregistry/safe-buffer@1.0.5': {}
+
+  '@socketregistry/safer-buffer@1.0.5': {}
+
+  '@socketregistry/set-function-length@1.0.5': {}
+
+  '@socketregistry/side-channel@1.0.5': {}
+
+  '@socketregistry/typedarray@1.0.5': {}
 
   '@tsconfig/node10@1.0.11': {}
 
@@ -4781,8 +4820,6 @@ snapshots:
 
   argparse@2.0.1: {}
 
-  array-flatten@1.1.1: {}
-
   array-timsort@1.0.3: {}
 
   array-union@2.1.0: {}
@@ -4946,11 +4983,11 @@ snapshots:
 
   call-bind@1.0.7:
     dependencies:
-      es-define-property: 1.0.0
+      es-define-property: '@socketregistry/es-define-property@1.0.5'
       es-errors: 1.3.0
-      function-bind: 1.1.2
+      function-bind: '@socketregistry/function-bind@1.0.5'
       get-intrinsic: 1.2.4
-      set-function-length: 1.2.2
+      set-function-length: '@socketregistry/set-function-length@1.0.5'
 
   callsites@3.1.0: {}
 
@@ -5070,13 +5107,13 @@ snapshots:
       buffer-from: 1.1.2
       inherits: 2.0.4
       readable-stream: 2.3.8
-      typedarray: 0.0.6
+      typedarray: '@socketregistry/typedarray@1.0.5'
 
   consola@2.15.3: {}
 
   content-disposition@0.5.4:
     dependencies:
-      safe-buffer: 5.2.1
+      safe-buffer: '@socketregistry/safe-buffer@1.0.5'
 
   content-type@1.0.5: {}
 
@@ -5098,7 +5135,7 @@ snapshots:
 
   cors@2.8.5:
     dependencies:
-      object-assign: 4.1.1
+      object-assign: '@socketregistry/object-assign@1.0.3'
       vary: 1.1.2
 
   cosmiconfig@8.3.6(typescript@5.3.3):
@@ -5160,12 +5197,6 @@ snapshots:
     dependencies:
       clone: 1.0.4
 
-  define-data-property@1.1.4:
-    dependencies:
-      es-define-property: 1.0.0
-      es-errors: 1.3.0
-      gopd: 1.0.1
-
   delayed-stream@1.0.0: {}
 
   denque@2.1.0: {}
@@ -5204,7 +5235,7 @@ snapshots:
 
   ecdsa-sig-formatter@1.0.11:
     dependencies:
-      safe-buffer: 5.2.1
+      safe-buffer: '@socketregistry/safe-buffer@1.0.5'
 
   ee-first@1.1.1: {}
 
@@ -5270,10 +5301,6 @@ snapshots:
   error-ex@1.3.2:
     dependencies:
       is-arrayish: 0.2.1
-
-  es-define-property@1.0.0:
-    dependencies:
-      get-intrinsic: 1.2.4
 
   es-errors@1.3.0: {}
 
@@ -5408,7 +5435,7 @@ snapshots:
   express@4.21.0:
     dependencies:
       accepts: 1.3.8
-      array-flatten: 1.1.1
+      array-flatten: '@socketregistry/array-flatten@1.0.5'
       body-parser: 1.20.3
       content-disposition: 0.5.4
       content-type: 1.0.5
@@ -5430,7 +5457,7 @@ snapshots:
       proxy-addr: 2.0.7
       qs: 6.13.0
       range-parser: 1.2.1
-      safe-buffer: 5.2.1
+      safe-buffer: '@socketregistry/safe-buffer@1.0.5'
       send: 0.19.0
       serve-static: 1.16.2
       setprototypeof: 1.2.0
@@ -5444,7 +5471,7 @@ snapshots:
   express@4.21.1:
     dependencies:
       accepts: 1.3.8
-      array-flatten: 1.1.1
+      array-flatten: '@socketregistry/array-flatten@1.0.5'
       body-parser: 1.20.3
       content-disposition: 0.5.4
       content-type: 1.0.5
@@ -5466,7 +5493,7 @@ snapshots:
       proxy-addr: 2.0.7
       qs: 6.13.0
       range-parser: 1.2.1
-      safe-buffer: 5.2.1
+      safe-buffer: '@socketregistry/safe-buffer@1.0.5'
       send: 0.19.0
       serve-static: 1.16.2
       setprototypeof: 1.2.0
@@ -5615,8 +5642,6 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  function-bind@1.1.2: {}
-
   gensync@1.0.0-beta.2: {}
 
   get-caller-file@2.0.5: {}
@@ -5624,10 +5649,10 @@ snapshots:
   get-intrinsic@1.2.4:
     dependencies:
       es-errors: 1.3.0
-      function-bind: 1.1.2
-      has-proto: 1.0.3
-      has-symbols: 1.0.3
-      hasown: 2.0.2
+      function-bind: '@socketregistry/function-bind@1.0.5'
+      has-proto: '@socketregistry/has-proto@1.0.5'
+      has-symbols: '@socketregistry/has-symbols@1.0.5'
+      hasown: '@socketregistry/hasown@1.0.5'
 
   get-package-type@0.1.0: {}
 
@@ -5676,10 +5701,6 @@ snapshots:
       merge2: 1.4.1
       slash: 3.0.0
 
-  gopd@1.0.1:
-    dependencies:
-      get-intrinsic: 1.2.4
-
   graceful-fs@4.2.11: {}
 
   graphemer@1.4.0: {}
@@ -5689,18 +5710,6 @@ snapshots:
   has-flag@4.0.0: {}
 
   has-own-prop@2.0.0: {}
-
-  has-property-descriptors@1.0.2:
-    dependencies:
-      es-define-property: 1.0.0
-
-  has-proto@1.0.3: {}
-
-  has-symbols@1.0.3: {}
-
-  hasown@2.0.2:
-    dependencies:
-      function-bind: 1.1.2
 
   hexoid@1.0.0: {}
 
@@ -5720,7 +5729,7 @@ snapshots:
 
   iconv-lite@0.4.24:
     dependencies:
-      safer-buffer: 2.1.2
+      safer-buffer: '@socketregistry/safer-buffer@1.0.5'
 
   ieee754@1.2.1: {}
 
@@ -5803,10 +5812,6 @@ snapshots:
     dependencies:
       binary-extensions: 2.3.0
 
-  is-core-module@2.15.1:
-    dependencies:
-      hasown: 2.0.2
-
   is-extglob@2.1.1: {}
 
   is-fullwidth-code-point@3.0.0: {}
@@ -5826,8 +5831,6 @@ snapshots:
   is-stream@2.0.1: {}
 
   is-unicode-supported@0.1.0: {}
-
-  isarray@1.0.0: {}
 
   isexe@2.0.0: {}
 
@@ -6258,12 +6261,12 @@ snapshots:
     dependencies:
       buffer-equal-constant-time: 1.0.1
       ecdsa-sig-formatter: 1.0.11
-      safe-buffer: 5.2.1
+      safe-buffer: '@socketregistry/safe-buffer@1.0.5'
 
   jws@3.2.2:
     dependencies:
       jwa: 1.4.1
-      safe-buffer: 5.2.1
+      safe-buffer: '@socketregistry/safe-buffer@1.0.5'
 
   kareem@2.6.3: {}
 
@@ -6511,7 +6514,7 @@ snapshots:
       busboy: 1.6.0
       concat-stream: 1.6.2
       mkdirp: 0.5.6
-      object-assign: 4.1.1
+      object-assign: '@socketregistry/object-assign@1.0.3'
       type-is: 1.6.18
       xtend: 4.0.2
 
@@ -6552,11 +6555,7 @@ snapshots:
     dependencies:
       path-key: 3.1.1
 
-  object-assign@4.1.1: {}
-
   object-hash@3.0.0: {}
-
-  object-inspect@1.13.2: {}
 
   ohash@1.1.4: {}
 
@@ -6647,8 +6646,6 @@ snapshots:
 
   path-key@3.1.1: {}
 
-  path-parse@1.0.7: {}
-
   path-scurry@1.11.1:
     dependencies:
       lru-cache: 10.4.3
@@ -6710,7 +6707,7 @@ snapshots:
 
   qs@6.13.0:
     dependencies:
-      side-channel: 1.0.6
+      side-channel: '@socketregistry/side-channel@1.0.5'
 
   queue-microtask@1.2.3: {}
 
@@ -6718,7 +6715,7 @@ snapshots:
 
   randombytes@2.1.0:
     dependencies:
-      safe-buffer: 5.2.1
+      safe-buffer: '@socketregistry/safe-buffer@1.0.5'
 
   range-parser@1.2.1: {}
 
@@ -6735,9 +6732,9 @@ snapshots:
     dependencies:
       core-util-is: 1.0.3
       inherits: 2.0.4
-      isarray: 1.0.0
+      isarray: '@socketregistry/isarray@1.0.5'
       process-nextick-args: 2.0.1
-      safe-buffer: 5.1.2
+      safe-buffer: '@socketregistry/safe-buffer@1.0.5'
       string_decoder: 1.1.1
       util-deprecate: 1.0.2
 
@@ -6777,8 +6774,8 @@ snapshots:
 
   resolve@1.22.8:
     dependencies:
-      is-core-module: 2.15.1
-      path-parse: 1.0.7
+      is-core-module: '@socketregistry/is-core-module@1.0.5'
+      path-parse: '@socketregistry/path-parse@1.0.5'
       supports-preserve-symlinks-flag: 1.0.0
 
   restore-cursor@3.1.0:
@@ -6803,12 +6800,6 @@ snapshots:
   rxjs@7.8.1:
     dependencies:
       tslib: 2.7.0
-
-  safe-buffer@5.1.2: {}
-
-  safe-buffer@5.2.1: {}
-
-  safer-buffer@2.1.2: {}
 
   schema-utils@3.3.0:
     dependencies:
@@ -6851,15 +6842,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  set-function-length@1.2.2:
-    dependencies:
-      define-data-property: 1.1.4
-      es-errors: 1.3.0
-      function-bind: 1.1.2
-      get-intrinsic: 1.2.4
-      gopd: 1.0.1
-      has-property-descriptors: 1.0.2
-
   setprototypeof@1.2.0: {}
 
   shebang-command@2.0.0:
@@ -6867,13 +6849,6 @@ snapshots:
       shebang-regex: 3.0.0
 
   shebang-regex@3.0.0: {}
-
-  side-channel@1.0.6:
-    dependencies:
-      call-bind: 1.0.7
-      es-errors: 1.3.0
-      get-intrinsic: 1.2.4
-      object-inspect: 1.13.2
 
   sift@17.1.3: {}
 
@@ -6980,11 +6955,11 @@ snapshots:
 
   string_decoder@1.1.1:
     dependencies:
-      safe-buffer: 5.1.2
+      safe-buffer: '@socketregistry/safe-buffer@1.0.5'
 
   string_decoder@1.3.0:
     dependencies:
-      safe-buffer: 5.2.1
+      safe-buffer: '@socketregistry/safe-buffer@1.0.5'
 
   strip-ansi@6.0.1:
     dependencies:
@@ -7183,8 +7158,6 @@ snapshots:
     dependencies:
       media-typer: 0.3.0
       mime-types: 2.1.35
-
-  typedarray@0.0.6: {}
 
   typescript@5.3.3: {}
 
