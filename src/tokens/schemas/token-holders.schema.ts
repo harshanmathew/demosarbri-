@@ -19,7 +19,10 @@ export class TokenHolders extends Document {
 	holder: Types.ObjectId | User
 
 	@Prop({ required: true, type: String, default: '0' })
-	balance: string
+	balanceInBig: string
+
+	@Prop({ required: true, type: String, default: 0 })
+	balance: number
 }
 
 export const TokenHoldersSchema = SchemaFactory.createForClass(TokenHolders)

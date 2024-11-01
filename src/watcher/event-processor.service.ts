@@ -615,24 +615,28 @@ export class EventProcessorService {
 
 		if (tokenHolders) {
 			if (type === 'buy') {
-				tokenHolders.balance = (
+				tokenHolders.balanceInBig = (
 					BigInt(tokenHolders.balance) + tokenAmount
 				).toString()
 			} else {
-				tokenHolders.balance = (
+				tokenHolders.balanceInBig = (
 					BigInt(tokenHolders.balance) - tokenAmount
 				).toString()
 			}
 			if (BigInt(tokenHolders.balance) < BigInt(0)) {
-				tokenHolders.balance = BigInt(0).toString()
+				tokenHolders.balanceInBig = BigInt(0).toString()
 			}
+			tokenHolders.balance = Number(
+				Number(BigInt(tokenHolders.balanceInBig) / BigInt(10 ** 18)).toFixed(4),
+			)
 
 			await tokenHolders.save()
 		} else {
 			const newTokenHolders = new this.tokenHoldersModel({
 				token: token._id,
 				holder: user._id,
-				balance: type === 'buy' ? tokenAmount.toString() : '0',
+				balanceInBig: type === 'buy' ? tokenAmount.toString() : '0',
+				balance: Number(Number(tokenAmount / BigInt(10 ** 18)).toFixed(4)),
 			})
 			await newTokenHolders.save()
 		}
@@ -668,23 +672,11 @@ export class EventProcessorService {
 			timestamp,
 			txHash,
 		})
-		const tokenHoldersList = await this.tokenHoldersModel
-			.find({
-				token: token._id,
-			})
-			.populate<{ holder: UserDocument }>('holder')
 
 		this.wsUpdatesGateway.broadcastTokenUpdate(
 			token.address,
-			'tokenHolders',
-			tokenHoldersList.map(tokenHolder => ({
-				holder: {
-					address: tokenHolder.holder.address,
-					username: tokenHolder.holder.username,
-					profileImage: tokenHolder.holder.profileImage,
-				},
-				balance: tokenHolder.balance,
-			})),
+			'tokenHoldersUpdated',
+			{},
 		)
 
 		this.wsUpdatesGateway.broadcastTokenUpdate(token.address, 'tokenUpdate', {

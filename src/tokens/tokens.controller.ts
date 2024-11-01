@@ -6,6 +6,7 @@ import { UserInfo } from 'src/users/user.decorator'
 import { RecentlyLaunchedQueryDto } from 'src/ws-updates/dto/recently-launched-query.dto'
 import { RecentlyLaunchedResponseDto } from 'src/ws-updates/dto/recently-launched-response.dto'
 import { CreateTokenDto } from './dto/create-token.dto'
+import { PaginationQueryDto } from './dto/pagination-query.dto'
 import { Token } from './schemas/token.schema'
 import { TokensService } from './tokens.service'
 
@@ -88,8 +89,11 @@ export class TokensController {
 		status: 200,
 		description: 'Return all token holders.',
 	})
-	findAllHolders(@Param('tokenId') tokenId: string) {
-		return this.tokensService.findAllHolders(tokenId)
+	findAllHolders(
+		@Query() queryParams: PaginationQueryDto,
+		@Param('tokenId') tokenId: string,
+	) {
+		return this.tokensService.findAllHolders(tokenId, queryParams)
 	}
 
 	@Get(':tokenId/trades')
@@ -98,8 +102,11 @@ export class TokensController {
 		status: 200,
 		description: 'Return all token trades.',
 	})
-	findAllTrades(@Param('tokenId') tokenId: string) {
-		return this.tokensService.findAllTrades(tokenId)
+	findAllTrades(
+		@Query() queryParams: PaginationQueryDto,
+		@Param('tokenId') tokenId: string,
+	) {
+		return this.tokensService.findAllTrades(tokenId, queryParams)
 	}
 
 	@Get(':address')

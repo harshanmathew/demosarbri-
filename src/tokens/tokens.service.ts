@@ -14,6 +14,7 @@ import { RecentlyLaunchedQueryDto } from 'src/ws-updates/dto/recently-launched-q
 import { TokenDto } from 'src/ws-updates/dto/recently-launched-response.dto'
 import { getAddress } from 'viem'
 import { CreateTokenDto } from './dto/create-token.dto'
+import { PaginationQueryDto } from './dto/pagination-query.dto'
 import {
 	TokenHolders,
 	TokenHoldersDocument,
@@ -167,15 +168,52 @@ export class TokensService {
 			.exec()
 	}
 
-	async findAllHolders(tokenId: string) {
-		return this.tokenHoldersModel
+	async findAllHolders(tokenId: string, queryParams: PaginationQueryDto) {
+		const { page = 1, limit = 10 } = queryParams
+		const currentPage = Math.max(1, page)
+		const pageSize = Math.max(1, limit)
+		const skip = (currentPage - 1) * pageSize
+
+		const total = await this.tokenHoldersModel
+			.countDocuments({ token: tokenId })
+			.exec()
+
+		const totalPages = Math.ceil(total / pageSize)
+
+		const holders = await this.tokenHoldersModel
 			.find({ token: tokenId })
+			.skip(skip)
+			.limit(pageSize)
+			.sort({ balance: -1 })
 			.populate<User>('holder', 'username address profileImage')
+
+		return {
+			holders,
+			totalPages,
+			currentPage,
+		}
 	}
 
-	async findAllTrades(tokenId: string) {
-		return this.tokenTradesModel
+	async findAllTrades(tokenId: string, queryParams: PaginationQueryDto) {
+		const { page = 1, limit = 10 } = queryParams
+		const currentPage = Math.max(1, page)
+		const pageSize = Math.max(1, limit)
+		const skip = (currentPage - 1) * pageSize
+
+		const total = await this.tokenTradesModel
+			.countDocuments({ token: tokenId })
+			.exec()
+		const totalPages = Math.ceil(total / pageSize)
+		const trades = await this.tokenTradesModel
 			.find({ token: tokenId })
+			.skip(skip)
+			.limit(pageSize)
+			.sort({ createdAt: -1 })
 			.populate<User>('trader', 'username address profileImage')
+		return {
+			trades,
+			totalPages,
+			currentPage,
+		}
 	}
 }
