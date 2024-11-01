@@ -27,3 +27,29 @@ export class PaginationQueryDto {
 	@Transform(({ value }) => Number.parseInt(value))
 	limit?: number
 }
+
+export class ChartQueryDto extends PaginationQueryDto {
+	@ApiProperty({
+		description: 'Start date',
+		required: false,
+	})
+	@IsOptional()
+	@IsString()
+	startDate?: string
+
+	@ApiProperty({
+		description: 'End date',
+		required: false,
+	})
+	@IsOptional()
+	@IsString()
+	endDate?: string
+
+	@ApiProperty({
+		description: 'Time interval',
+		required: false,
+	})
+	@IsOptional()
+	@IsString()
+	interval?: string
+}

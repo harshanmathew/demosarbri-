@@ -4,7 +4,7 @@ import {
 	NotFoundException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import {
 	UserActivity,
 	UserActivityDocument,
@@ -14,7 +14,7 @@ import { RecentlyLaunchedQueryDto } from 'src/ws-updates/dto/recently-launched-q
 import { TokenDto } from 'src/ws-updates/dto/recently-launched-response.dto'
 import { getAddress } from 'viem'
 import { CreateTokenDto } from './dto/create-token.dto'
-import { PaginationQueryDto } from './dto/pagination-query.dto'
+import { ChartQueryDto, PaginationQueryDto } from './dto/pagination-query.dto'
 import { TokenWithVolumeDto, UserDto } from './dto/token-response.dto'
 import {
 	TokenHolders,
@@ -238,5 +238,98 @@ export class TokensService {
 			totalPages,
 			currentPage,
 		}
+	}
+
+	async findChart(tokenId: string, queryParams: ChartQueryDto) {
+		const {
+			limit = 100,
+			interval = '5m',
+			page = 1,
+			endDate,
+			startDate,
+		} = queryParams
+
+		const pipeline: any[] = [
+			{
+				$match: {
+					token: new Types.ObjectId(tokenId),
+				},
+			},
+		]
+
+		if (startDate && endDate) {
+			pipeline[0].$match.timestamp = {
+				$gte: new Date(startDate),
+				$lte: new Date(endDate),
+			}
+		} else if (startDate) {
+			pipeline[0].$match.timestamp = {
+				$gte: new Date(startDate),
+			}
+		} else if (endDate) {
+			pipeline[0].$match.timestamp = {
+				$lte: new Date(endDate),
+			}
+		}
+
+		// Add date grouping based on interval
+		pipeline.push({
+			$addFields: {
+				groupDate: {
+					$dateTrunc: {
+						date: '$timestamp',
+						unit:
+							interval === '5m'
+								? 'minute'
+								: interval === '15m'
+									? 'minute'
+									: interval === '1h'
+										? 'hour'
+										: interval === '1d'
+											? 'day'
+											: interval === '1w'
+												? 'week'
+												: 'hour',
+						binSize: interval === '5m' ? 5 : interval === '15m' ? 15 : 1,
+					},
+				},
+			},
+		})
+
+		pipeline.push({
+			$group: {
+				_id: '$groupDate',
+				volume: { $sum: '$boneAmount' },
+				high: { $max: '$boneAmount' },
+				low: { $min: '$boneAmount' },
+				open: { $first: '$boneAmount' },
+				close: { $last: '$boneAmount' },
+				time: { $first: '$timestamp' },
+			},
+		})
+
+		const currentPage = Math.max(1, page)
+		const pageSize = Math.max(1, limit)
+		const skip = (currentPage - 1) * pageSize
+
+		pipeline.push(
+			{ $sort: { _id: 1 } },
+			{ $skip: skip },
+			{ $limit: pageSize },
+			{
+				$project: {
+					_id: 0,
+					time: '$_id',
+					volume: 1,
+					high: 1,
+					low: 1,
+					open: 1,
+					close: 1,
+				},
+			},
+		)
+
+		const trades = await this.tokenTradesModel.aggregate(pipeline).exec()
+		return trades
 	}
 }

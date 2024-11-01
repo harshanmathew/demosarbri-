@@ -6,8 +6,12 @@ import { UserInfo } from 'src/users/user.decorator'
 import { RecentlyLaunchedQueryDto } from 'src/ws-updates/dto/recently-launched-query.dto'
 import { RecentlyLaunchedResponseDto } from 'src/ws-updates/dto/recently-launched-response.dto'
 import { CreateTokenDto } from './dto/create-token.dto'
-import { PaginationQueryDto } from './dto/pagination-query.dto'
-import { TokenWithVolumeDto } from './dto/token-response.dto'
+import { ChartQueryDto, PaginationQueryDto } from './dto/pagination-query.dto'
+import {
+	TokenHoldersResponseDto,
+	TokenTradesResponseDto,
+	TokenWithVolumeDto,
+} from './dto/token-response.dto'
 import { Token } from './schemas/token.schema'
 import { TokensService } from './tokens.service'
 
@@ -89,6 +93,7 @@ export class TokensController {
 	@ApiResponse({
 		status: 200,
 		description: 'Return all token holders.',
+		type: TokenHoldersResponseDto,
 	})
 	findAllHolders(
 		@Query() queryParams: PaginationQueryDto,
@@ -102,12 +107,26 @@ export class TokensController {
 	@ApiResponse({
 		status: 200,
 		description: 'Return all token trades.',
+		type: TokenTradesResponseDto,
 	})
 	findAllTrades(
 		@Query() queryParams: PaginationQueryDto,
 		@Param('tokenId') tokenId: string,
 	) {
 		return this.tokensService.findAllTrades(tokenId, queryParams)
+	}
+
+	@Get(':tokenId/chart')
+	@ApiOperation({ summary: 'Get the token chart' })
+	@ApiResponse({
+		status: 200,
+		description: 'Return the token chart.',
+	})
+	findChart(
+		@Query() queryParams: ChartQueryDto,
+		@Param('tokenId') tokenId: string,
+	) {
+		return this.tokensService.findChart(tokenId, queryParams)
 	}
 
 	@Get(':address')
