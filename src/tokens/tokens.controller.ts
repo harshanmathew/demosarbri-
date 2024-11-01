@@ -7,6 +7,7 @@ import { RecentlyLaunchedQueryDto } from 'src/ws-updates/dto/recently-launched-q
 import { RecentlyLaunchedResponseDto } from 'src/ws-updates/dto/recently-launched-response.dto'
 import { CreateTokenDto } from './dto/create-token.dto'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
+import { TokenWithVolumeDto } from './dto/token-response.dto'
 import { Token } from './schemas/token.schema'
 import { TokensService } from './tokens.service'
 
@@ -111,7 +112,11 @@ export class TokensController {
 
 	@Get(':address')
 	@ApiOperation({ summary: 'Get a specific token by address' })
-	@ApiResponse({ status: 200, description: 'Return the token.', type: Token })
+	@ApiResponse({
+		status: 200,
+		description: 'Return the token.',
+		type: TokenWithVolumeDto,
+	})
 	findOne(@Param('address') address: string, @UserInfo() user: User) {
 		return this.tokensService.findOne(address)
 	}

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { Token } from '../schemas/token.schema'
 
 class UserDto {
 	@ApiProperty()
@@ -68,4 +69,9 @@ export class TokenTradesResponseDto {
 
 	@ApiProperty()
 	currentPage: number
+}
+
+export class TokenWithVolumeDto extends Token {
+	@ApiProperty()
+	volume24: number
 }

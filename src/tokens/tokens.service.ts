@@ -15,6 +15,7 @@ import { TokenDto } from 'src/ws-updates/dto/recently-launched-response.dto'
 import { getAddress } from 'viem'
 import { CreateTokenDto } from './dto/create-token.dto'
 import { PaginationQueryDto } from './dto/pagination-query.dto'
+import { TokenWithVolumeDto } from './dto/token-response.dto'
 import {
 	TokenHolders,
 	TokenHoldersDocument,
@@ -48,14 +49,36 @@ export class TokensService {
 		return this.tokenModel.find({ creator: user._id }).exec()
 	}
 
-	async findOne(address: string): Promise<Token> {
+	async findOne(address: string): Promise<TokenWithVolumeDto> {
 		const token = await this.tokenModel
 			.findOne({ address: getAddress(address) })
+			.populate({
+				path: 'creator',
+				select: 'username address profileImage',
+			})
 			.exec()
 		if (!token) {
 			throw new NotFoundException(`Token with Address: "${address}" not found`)
 		}
-		return token
+		const volume24 = await this.tokenTradesModel
+			.aggregate([
+				{
+					$match: {
+						token: token._id,
+						createdAt: {
+							$gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
+						},
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						total: { $sum: '$boneAmount' },
+					},
+				},
+			])
+			.exec()
+		return { ...token, volume24: volume24[0]?.total || 0 }
 	}
 
 	async findAllLaunched(): Promise<Token[]> {
