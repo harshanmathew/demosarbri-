@@ -421,9 +421,7 @@ export class EventProcessorService {
 
 		return {
 			priceInBigInt: scaledPrice,
-			priceInBone: Number(
-				Number(Number(scaledPrice) / Number(SCALE)).toFixed(4),
-			),
+			priceInBone: Number(scaledPrice / BigInt(10 ** 14)) / 10000,
 		}
 	}
 
@@ -433,17 +431,14 @@ export class EventProcessorService {
 		for (const [tokenId, accumulatedUpdates] of this.pendingUpdates.entries()) {
 			const { totalRaisedInBoneBig, virtualY, virtualX } = accumulatedUpdates
 
-			console.log('virtualY', virtualY)
-			console.log('virtualX', virtualX)
 			const newTokenPrice = this.calculateTokenPrice(virtualY, virtualX)
 
-			console.log('newTokenPrice', newTokenPrice)
 			const token = await this.tokenModel.findById(tokenId)
 			const newMarketCap =
 				newTokenPrice.priceInBone *
 				Number(BigInt(token.tokenSupply) / BigInt(10n ** 18n))
 
-			const newMarketCapBig = BigInt(newMarketCap * 10 ** 18)
+			const newMarketCapBig = BigInt(newMarketCap) * BigInt(10 ** 18)
 
 			updates.push(
 				this.tokenModel.updateOne(
@@ -451,15 +446,14 @@ export class EventProcessorService {
 					{
 						$set: {
 							totalRaisedInBoneBig: totalRaisedInBoneBig.toString(),
-							totalRaisedInBone: Number(
-								Number(totalRaisedInBoneBig / BigInt(10n ** 18n)).toFixed(2),
-							),
+							totalRaisedInBone:
+								Number(totalRaisedInBoneBig / BigInt(10n ** 14n)) / 10000,
 							virtualY: virtualY.toString(),
 							virtualX: virtualX.toString(),
 							tokenPriceInBoneBig: newTokenPrice.priceInBigInt.toString(),
 							tokenPriceInBone: newTokenPrice.priceInBone,
 							marketCapInBoneBig: newMarketCapBig.toString(),
-							marketCapInBone: Number(Number(newMarketCap).toFixed(4)),
+							marketCapInBone: newMarketCap,
 						},
 					},
 				),
@@ -519,12 +513,12 @@ export class EventProcessorService {
 		token.virtualX = virtualX.toString()
 		const tokenPrice = virtualY / virtualX
 		const marketCap =
-			(tokenPrice * eventData.args.totalSupply) / BigInt(10 ** 18)
+			tokenPrice * (eventData.args.totalSupply / BigInt(10 ** 18))
 
 		token.tokenPriceInBoneBig = tokenPrice.toString()
-		token.tokenPriceInBone = Number(Number(tokenPrice).toFixed(2))
+		token.tokenPriceInBone = Number(tokenPrice / BigInt(10 ** 14)) / 10000
 		token.marketCapInBoneBig = marketCap.toString()
-		token.marketCapInBone = Number(Number(marketCap).toFixed(2))
+		token.marketCapInBone = Number(marketCap / BigInt(10 ** 14)) / 10000
 
 		await token.save()
 
@@ -532,9 +526,8 @@ export class EventProcessorService {
 			user: creator._id,
 			type: 'created',
 			boneAmount: 0,
-			tokenAmount: Number(
-				Number(eventData.args.totalSupply / BigInt(10 ** 18)).toFixed(2),
-			),
+			tokenAmount:
+				Number(eventData.args.totalSupply / BigInt(10 ** 14)) / 10000,
 			token: token._id,
 			timestamp: event.timestamp,
 		})
@@ -587,11 +580,14 @@ export class EventProcessorService {
 		const token = await this.getToken(tokenAddress)
 		const user = await this.createUserIfNotExists(trader)
 
+		const tradeBoneAmount = Number(boneAmount / BigInt(10 ** 14)) / 10000
+		const tradeTokenAmount = Number(tokenAmount / BigInt(10 ** 14)) / 10000
+
 		const tokenTrade = new this.tokenTradesModel({
 			token: token._id,
 			trader: user._id,
-			boneAmount: Number(boneAmount / BigInt(10 ** 18)).toFixed(2),
-			tokenAmount: Number(tokenAmount / BigInt(10 ** 18)).toFixed(2),
+			boneAmount: tradeBoneAmount,
+			tokenAmount: tradeTokenAmount,
 			type,
 			timestamp,
 			txHash,
@@ -601,8 +597,8 @@ export class EventProcessorService {
 		const userActivity = new this.userActivityModel({
 			user: user._id,
 			type,
-			boneAmount: Number(boneAmount / BigInt(10 ** 18)).toFixed(2),
-			tokenAmount: Number(tokenAmount / BigInt(10 ** 18)).toFixed(2),
+			boneAmount: tradeBoneAmount,
+			tokenAmount: tradeTokenAmount,
 			token: token._id,
 			timestamp,
 		})
@@ -616,19 +612,18 @@ export class EventProcessorService {
 		if (tokenHolders) {
 			if (type === 'buy') {
 				tokenHolders.balanceInBig = (
-					BigInt(tokenHolders.balance) + tokenAmount
+					BigInt(tokenHolders.balanceInBig) + tokenAmount
 				).toString()
 			} else {
 				tokenHolders.balanceInBig = (
-					BigInt(tokenHolders.balance) - tokenAmount
+					BigInt(tokenHolders.balanceInBig) - tokenAmount
 				).toString()
 			}
-			if (BigInt(tokenHolders.balance) < BigInt(0)) {
+			if (BigInt(tokenHolders.balanceInBig) < BigInt(0)) {
 				tokenHolders.balanceInBig = BigInt(0).toString()
 			}
-			tokenHolders.balance = Number(
-				Number(BigInt(tokenHolders.balanceInBig) / BigInt(10 ** 18)).toFixed(4),
-			)
+			tokenHolders.balance =
+				Number(BigInt(tokenHolders.balanceInBig) / BigInt(10 ** 14)) / 10000
 
 			await tokenHolders.save()
 		} else {
@@ -636,7 +631,7 @@ export class EventProcessorService {
 				token: token._id,
 				holder: user._id,
 				balanceInBig: type === 'buy' ? tokenAmount.toString() : '0',
-				balance: Number(Number(tokenAmount / BigInt(10 ** 18)).toFixed(4)),
+				balance: type === 'buy' ? tradeTokenAmount : 0,
 			})
 			await newTokenHolders.save()
 		}
@@ -653,8 +648,8 @@ export class EventProcessorService {
 				username: user.username,
 				profileImage: user.profileImage,
 			},
-			boneAmount: Number(boneAmount / BigInt(10 ** 18)).toFixed(2),
-			tokenAmount: Number(tokenAmount / BigInt(10 ** 18)).toFixed(2),
+			boneAmount: tradeBoneAmount,
+			tokenAmount: tradeTokenAmount,
 			type,
 			timestamp,
 			txHash,
@@ -666,8 +661,8 @@ export class EventProcessorService {
 				username: user.username,
 				profileImage: user.profileImage,
 			},
-			boneAmount: Number(boneAmount / BigInt(10 ** 18)).toFixed(2),
-			tokenAmount: Number(tokenAmount / BigInt(10 ** 18)).toFixed(2),
+			boneAmount: tradeBoneAmount,
+			tokenAmount: tradeTokenAmount,
 			type,
 			timestamp,
 			txHash,
