@@ -226,7 +226,7 @@ export class EventProcessorService {
 
 	private async processUnprocessedEvents() {
 		const unprocessedEvents = await this.eventLogsModel
-			.find({ processed: false })
+			.find({ processed: false, removed: false })
 			.sort({ blockNumber: 1, logIndex: 1, transactionIndex: 1 })
 			.lean()
 
