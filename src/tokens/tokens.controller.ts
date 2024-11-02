@@ -12,6 +12,7 @@ import {
 	TokenTradesResponseDto,
 	TokenWithVolumeDto,
 } from './dto/token-response.dto'
+import { UpdateTokenDto } from './dto/update-token.dto'
 import { Token } from './schemas/token.schema'
 import { TokensService } from './tokens.service'
 
@@ -31,6 +32,22 @@ export class TokensController {
 	@Auth()
 	create(@Body() createTokenDto: CreateTokenDto, @UserInfo() user: User) {
 		return this.tokensService.create(createTokenDto, user)
+	}
+
+	@Put(':tokenId')
+	@ApiOperation({ summary: 'Update a token' })
+	@ApiBody({ type: UpdateTokenDto })
+	@ApiResponse({
+		status: 200,
+		description: 'The token has been successfully updated.',
+	})
+	@Auth()
+	update(
+		@Param('tokenId') tokenId: string,
+		@Body() updateTokenDto: UpdateTokenDto,
+		@UserInfo() user: User,
+	) {
+		return this.tokensService.update(tokenId, updateTokenDto, user)
 	}
 
 	@Get('/user')

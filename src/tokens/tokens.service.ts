@@ -16,6 +16,7 @@ import { getAddress } from 'viem'
 import { CreateTokenDto } from './dto/create-token.dto'
 import { ChartQueryDto, PaginationQueryDto } from './dto/pagination-query.dto'
 import { TokenWithVolumeDto, UserDto } from './dto/token-response.dto'
+import { UpdateTokenDto } from './dto/update-token.dto'
 import {
 	TokenHolders,
 	TokenHoldersDocument,
@@ -43,6 +44,12 @@ export class TokensService {
 		})
 
 		return createdToken.save()
+	}
+
+	async update(tokenId: string, updateTokenDto: UpdateTokenDto, user: User) {
+		return this.tokenModel.findByIdAndUpdate(tokenId, updateTokenDto, {
+			new: true,
+		})
 	}
 
 	async findAll(user: User): Promise<Token[]> {
