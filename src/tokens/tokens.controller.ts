@@ -34,7 +34,7 @@ export class TokensController {
 		return this.tokensService.create(createTokenDto, user)
 	}
 
-	@Put(':tokenId')
+	@Put(':address')
 	@ApiOperation({ summary: 'Update a token' })
 	@ApiBody({ type: UpdateTokenDto })
 	@ApiResponse({
@@ -43,11 +43,11 @@ export class TokensController {
 	})
 	@Auth()
 	update(
-		@Param('tokenId') tokenId: string,
+		@Param('address') address: string,
 		@Body() updateTokenDto: UpdateTokenDto,
 		@UserInfo() user: User,
 	) {
-		return this.tokensService.update(tokenId, updateTokenDto, user)
+		return this.tokensService.update(address, updateTokenDto, user)
 	}
 
 	@Get('/user')

@@ -46,10 +46,14 @@ export class TokensService {
 		return createdToken.save()
 	}
 
-	async update(tokenId: string, updateTokenDto: UpdateTokenDto, user: User) {
-		return this.tokenModel.findByIdAndUpdate(tokenId, updateTokenDto, {
-			new: true,
-		})
+	async update(address: string, updateTokenDto: UpdateTokenDto, user: User) {
+		return this.tokenModel.findOneAndUpdate(
+			{ address: getAddress(address) },
+			updateTokenDto,
+			{
+				new: true,
+			},
+		)
 	}
 
 	async findAll(user: User): Promise<Token[]> {
