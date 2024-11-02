@@ -42,7 +42,7 @@ export class RpcRequestProcessor extends WorkerHost {
 			return customSerializer.serialize(result)
 		} catch (error) {
 			console.error(
-				`Error processing RPC request: ${error.message} with \n method: ${method} \n params: ${JSON.stringify(params)} \n ApiKey: ${RPC_API_KEY[this.currentClientIndex]}`,
+				`Error processing RPC request: ${error.message} with \n method: ${method} \n params: ${JSON.stringify(params)} `,
 			)
 			throw new Error(
 				`Error processing RPC request: ${error.message} with \n method: ${method} \n params: ${JSON.stringify(params)}`,
