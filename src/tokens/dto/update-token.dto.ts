@@ -6,11 +6,13 @@ export class UpdateTokenDto {
 		example: 'This is a revolutionary new token for awesome people.',
 	})
 	@IsString()
-	description: string
+	@IsOptional()
+	description?: string
 
 	@ApiProperty({ example: 'https://example.com/token-image.png' })
 	@IsString()
-	image: string
+	@IsOptional()
+	image?: string
 
 	@ApiPropertyOptional({ example: 'https://twitter.com/myawesometoken' })
 	@IsString()
