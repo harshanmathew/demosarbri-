@@ -16,6 +16,7 @@ import { getAddress } from 'viem'
 import { CreateTokenDto } from './dto/create-token.dto'
 import { ChartQueryDto, PaginationQueryDto } from './dto/pagination-query.dto'
 import { TokenWithVolumeDto, UserDto } from './dto/token-response.dto'
+import { UpdateTokenDto } from './dto/update-token.dto'
 import {
 	TokenHolders,
 	TokenHoldersDocument,
@@ -43,6 +44,27 @@ export class TokensService {
 		})
 
 		return createdToken.save()
+	}
+
+	async update(address: string, updateTokenDto: UpdateTokenDto, user: User) {
+		// Filter out undefined, null, and empty string values
+		const filteredUpdate = Object.entries(updateTokenDto).reduce(
+			(acc, [key, value]) => {
+				if (value !== undefined && value !== null && value !== '') {
+					acc[key] = value
+				}
+				return acc
+			},
+			{},
+		)
+
+		return this.tokenModel.findOneAndUpdate(
+			{ address: getAddress(address) },
+			filteredUpdate,
+			{
+				new: true,
+			},
+		)
 	}
 
 	async findAll(user: User): Promise<Token[]> {

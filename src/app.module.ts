@@ -2,6 +2,7 @@ import { BullModule } from '@nestjs/bullmq'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { ScheduleModule } from '@nestjs/schedule'
+import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { AuthModule } from './auth/auth.module'
 import { BullConfigService } from './bull-config.service'
@@ -26,9 +27,10 @@ import { WsUpdatesModule } from './ws-updates/ws-updates.module'
 		AuthModule,
 		UploadsModule,
 		TokensModule,
-		WatcherModule,
+		// WatcherModule,
 		WsUpdatesModule,
 	],
+	controllers: [AppController],
 	providers: [
 		AppService,
 		{
