@@ -678,6 +678,9 @@ export class EventProcessorService {
 			totalRaisedInBone: token.totalRaisedInBone,
 			tokenPriceInBone: token.tokenPriceInBone,
 			marketCapInBone: token.marketCapInBone,
+			virtualX: token.virtualX,
+			virtualY: token.virtualY,
+			volume24: token.volume24,
 		})
 	}
 
