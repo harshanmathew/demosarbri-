@@ -313,9 +313,10 @@ export class TokensService {
 		const skip = (currentPage - 1) * pageSize
 
 		pipeline.push(
-			{ $sort: { _id: 1 } },
+			{ $sort: { _id: -1 } },
 			{ $skip: skip },
 			{ $limit: pageSize },
+			{ $sort: { _id: 1 } },
 			{
 				$project: {
 					_id: 0,

@@ -155,3 +155,23 @@ export class TokenWithVolumeDto {
 	@ApiProperty({ type: Number })
 	volume24: number
 }
+
+export class ChartResponseDto {
+	@ApiProperty()
+	time: Date
+
+	@ApiProperty()
+	volume: number
+
+	@ApiProperty()
+	high: number
+
+	@ApiProperty()
+	low: number
+
+	@ApiProperty()
+	open: number
+
+	@ApiProperty()
+	close: number
+}

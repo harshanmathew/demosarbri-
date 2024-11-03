@@ -8,6 +8,7 @@ import { RecentlyLaunchedResponseDto } from 'src/ws-updates/dto/recently-launche
 import { CreateTokenDto } from './dto/create-token.dto'
 import { ChartQueryDto, PaginationQueryDto } from './dto/pagination-query.dto'
 import {
+	ChartResponseDto,
 	TokenHoldersResponseDto,
 	TokenTradesResponseDto,
 	TokenWithVolumeDto,
@@ -121,6 +122,7 @@ export class TokensController {
 	@ApiResponse({
 		status: 200,
 		description: 'Return the token chart.',
+		type: [ChartResponseDto],
 	})
 	findChart(
 		@Query() queryParams: ChartQueryDto,
