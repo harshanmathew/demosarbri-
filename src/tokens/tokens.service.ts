@@ -209,7 +209,7 @@ export class TokensService {
 				select: 'name ticker image address',
 			})
 			.select(['user', 'token', 'type', 'boneAmount', 'tokenAmount'])
-			.limit(10)
+			.limit(6)
 			.exec()
 	}
 

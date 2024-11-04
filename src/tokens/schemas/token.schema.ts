@@ -6,6 +6,36 @@ import { User } from 'src/users/schemas/user.schemas'
 export type TokenDocument = Token & Document
 
 @Schema()
+class BondingCurveParams {
+	@Prop({ default: false })
+	@ApiProperty({ type: String })
+	k: string
+
+	@Prop({ default: false })
+	@ApiProperty({ type: String })
+	x1: string
+
+	@Prop({ default: false })
+	@ApiProperty({ type: String })
+	y1: string
+
+	@Prop({ default: false })
+	@ApiProperty({ type: String })
+	x0: string
+
+	@Prop({ default: false })
+	@ApiProperty({ type: String })
+	y0: string
+
+	@Prop({ default: false })
+	@ApiProperty({ type: String })
+	virtualX: string
+
+	@Prop({ default: false })
+	@ApiProperty({ type: String })
+	virtualY: string
+}
+@Schema()
 export class Token {
 	@ApiProperty({ type: String })
 	_id: Types.ObjectId
@@ -66,36 +96,20 @@ export class Token {
 	transactionHash: string
 
 	@Prop({ required: false })
-	@ApiProperty({ type: String })
-	marketCapInBoneBig: string
-
-	@Prop({ required: false })
 	@ApiProperty({ type: Number })
 	marketCapInBone: number
-
-	@Prop({ required: false })
-	@ApiProperty({ type: String })
-	totalRaisedInBoneBig: string
 
 	@Prop({ required: false })
 	@ApiProperty({ type: Number })
 	totalRaisedInBone: number
 
 	@Prop({ required: false })
-	@ApiProperty({ type: String })
-	tokenPriceInBoneBig: string
-
-	@Prop({ required: false })
 	@ApiProperty({ type: Number })
 	tokenPriceInBone: number
 
 	@Prop({ required: false })
-	@ApiProperty({ type: String })
-	virtualY: string
-
-	@Prop({ required: false })
-	@ApiProperty({ type: String })
-	virtualX: string
+	@ApiProperty({ type: Number })
+	bondingCurveTokenBalance: number
 
 	@Prop({ required: false })
 	@ApiProperty({ type: String })
@@ -104,6 +118,10 @@ export class Token {
 	@Prop({ default: false })
 	@ApiProperty({ type: Boolean })
 	launched: boolean
+
+	@Prop({ type: () => BondingCurveParams })
+	@ApiProperty({ type: BondingCurveParams })
+	bondingCurveParams: BondingCurveParams
 
 	@Prop({ default: false })
 	@ApiProperty({ type: Boolean })

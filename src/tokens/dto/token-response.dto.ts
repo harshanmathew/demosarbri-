@@ -73,6 +73,29 @@ export class TokenTradesResponseDto {
 	currentPage: number
 }
 
+export class BondingCurveParamsDto {
+	@ApiProperty()
+	k: string
+
+	@ApiProperty()
+	x1: string
+
+	@ApiProperty()
+	y1: string
+
+	@ApiProperty()
+	x0: string
+
+	@ApiProperty()
+	y0: string
+
+	@ApiProperty()
+	virtualX: string
+
+	@ApiProperty()
+	virtualY: string
+}
+
 export class TokenWithVolumeDto {
 	@ApiProperty({ type: String })
 	_id: Types.ObjectId
@@ -119,29 +142,14 @@ export class TokenWithVolumeDto {
 	@ApiProperty({ type: String })
 	transactionHash: string
 
-	@ApiProperty({ type: String })
-	marketCapInBoneBig: string
-
 	@ApiProperty({ type: Number })
 	marketCapInBone: number
-
-	@ApiProperty({ type: String })
-	totalRaisedInBoneBig: string
 
 	@ApiProperty({ type: Number })
 	totalRaisedInBone: number
 
-	@ApiProperty({ type: String })
-	tokenPriceInBoneBig: string
-
 	@ApiProperty({ type: Number })
 	tokenPriceInBone: number
-
-	@ApiProperty({ type: String })
-	virtualY: string
-
-	@ApiProperty({ type: String })
-	virtualX: string
 
 	@ApiProperty({ type: String })
 	pairAddress: string
@@ -154,6 +162,9 @@ export class TokenWithVolumeDto {
 
 	@ApiProperty({ type: Number })
 	volume24: number
+
+	@ApiProperty({ type: BondingCurveParamsDto })
+	bondingCurveParams: BondingCurveParamsDto
 }
 
 export class ChartResponseDto {

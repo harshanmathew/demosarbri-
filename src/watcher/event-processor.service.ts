@@ -24,6 +24,9 @@ import { WsUpdatesGateway } from 'src/ws-updates/ws-updates.gateway'
 import {
 	http,
 	Chain,
+	PublicActions,
+	WalletActions,
+	WalletClient,
 	createWalletClient,
 	getAddress,
 	isAddress,
@@ -35,20 +38,14 @@ import { shibarium, shibariumTestnet } from 'viem/chains'
 import { EventLogs, EventLogsDocument } from './schema/event-logs.schema'
 
 type SharbiFunEventType = EventTypeFromAbi<typeof sharbiFunAbi>
-interface TokenUpdate {
-	totalRaisedInBoneBig: bigint
-	virtualY: bigint
-	virtualX: bigint
-	tokenAmountChange: bigint
-	ethAmountChange: bigint
-}
 
 @Injectable()
 export class EventProcessorService {
 	private isProcessing = false
 	private userCache = new Map<string, any>()
 	private tokenCache = new Map<string, any>()
-	private pendingUpdates = new Map<string, TokenUpdate>()
+	private pendingUpdates = new Map<string, boolean>()
+	private walletClient: WalletClient & PublicActions
 	constructor(
 		@InjectModel(EventLogs.name)
 		private eventLogsModel: Model<EventLogsDocument>,
@@ -63,149 +60,19 @@ export class EventProcessorService {
 		private readonly configService: ConfigService,
 		private wsUpdatesGateway: WsUpdatesGateway,
 	) {
-		//this.processTestScenario()
+		let chain: Chain = shibariumTestnet
+		if (this.configService.get<string>('CHAIN') === 'mainnet') {
+			chain = shibarium
+		}
+		const account = privateKeyToAccount(
+			this.configService.get<`0x${string}`>('PRIVATE_KEY'),
+		)
+		this.walletClient = createWalletClient({
+			account,
+			chain,
+			transport: http(this.configService.get<string>('RPC_URL')),
+		}).extend(publicActions)
 	}
-	// private async processTestScenario() {
-	// 	const tokenAddress = '0x6E0d01A76C3Cf4288372a29124A26D4353EE51BE'
-	// 	const sampleEvents = [
-	// 		// Launch Event
-	// 		{
-	// 			event: {
-	// 				blockNumber: 1,
-	// 				timestamp: new Date(),
-	// 				transactionHash: 'tx1',
-	// 			},
-	// 			parsed: {
-	// 				eventName: 'Launch',
-	// 				args: {
-	// 					launcher: '0x599333629bA154aF829a8880f18313311CfcE6EA',
-	// 					tokenAddress: tokenAddress,
-	// 					name: 'Test Token',
-	// 					symbol: 'TEST',
-	// 					totalSupply: BigInt('10000000000000000000000'), // 10,000 tokens
-	// 					curveSize: 0, // beginner curve
-	// 				},
-	// 			},
-	// 		},
-	// 		// First Buy Event
-	// 		{
-	// 			event: {
-	// 				blockNumber: 2,
-	// 				timestamp: new Date(),
-	// 				transactionHash: 'tx2',
-	// 			},
-	// 			parsed: {
-	// 				eventName: 'Buy',
-	// 				args: {
-	// 					buyer: '0x599333629bA154aF829a8880f18313311CfcE6EA',
-	// 					tokenAddress: tokenAddress,
-	// 					ethAmountIn: BigInt('100000000000000000000'), // 100 BONE
-	// 					tokenAmountOut: BigInt('1500000000000000000000'), // 1,500 tokens
-	// 				},
-	// 			},
-	// 		},
-	// 		// Second Buy Event
-	// 		{
-	// 			event: {
-	// 				blockNumber: 3,
-	// 				timestamp: new Date(),
-	// 				transactionHash: 'tx3',
-	// 			},
-	// 			parsed: {
-	// 				eventName: 'Buy',
-	// 				args: {
-	// 					buyer: '0x60D9637A7ad741a7F60595045d29960326c1843A',
-	// 					tokenAddress: tokenAddress,
-	// 					ethAmountIn: BigInt('50000000000000000000'), // 50 BONE
-	// 					tokenAmountOut: BigInt('700000000000000000000'), // 700 tokens
-	// 				},
-	// 			},
-	// 		},
-	// 		// Third Buy Event
-	// 		{
-	// 			event: {
-	// 				blockNumber: 4,
-	// 				timestamp: new Date(),
-	// 				transactionHash: 'tx4',
-	// 			},
-	// 			parsed: {
-	// 				eventName: 'Buy',
-	// 				args: {
-	// 					buyer: '0xfFfFD00d331C3Ff80D8F7d82A2f9A2312E0124b4',
-	// 					tokenAddress: tokenAddress,
-	// 					ethAmountIn: BigInt('30000000000000000000'), // 30 BONE
-	// 					tokenAmountOut: BigInt('400000000000000000000'), // 400 tokens
-	// 				},
-	// 			},
-	// 		},
-	// 		// Sell Event
-	// 		{
-	// 			event: {
-	// 				blockNumber: 5,
-	// 				timestamp: new Date(),
-	// 				transactionHash: 'tx5',
-	// 			},
-	// 			parsed: {
-	// 				eventName: 'Sell',
-	// 				args: {
-	// 					seller: '0x599333629bA154aF829a8880f18313311CfcE6EA',
-	// 					tokenAddress: tokenAddress,
-	// 					ethAmountOut: BigInt('75000000000000000000'), // 75 BONE
-	// 					tokenAmountIn: BigInt('1000000000000000000000'), // 1000 tokens
-	// 				},
-	// 			},
-	// 		},
-	// 	]
-
-	// 	console.log('=== Processing Complete Token Lifecycle Events ===')
-	// 	await this.processTokenEvents(tokenAddress, sampleEvents as any)
-
-	// 	// Create sample events for a pro curve token
-	// 	const proTokenAddress = '0xb794f5ea0ba39494ce839613fffba74279579268'
-	// 	const proTokenEvents = [
-	// 		{
-	// 			event: {
-	// 				blockNumber: 1,
-	// 				timestamp: new Date(),
-	// 				transactionHash: 'tx6',
-	// 			},
-	// 			parsed: {
-	// 				eventName: 'Launch',
-	// 				args: {
-	// 					launcher: '0x60D9637A7ad741a7F60595045d29960326c1843A',
-	// 					tokenAddress: proTokenAddress,
-	// 					name: 'Pro Token',
-	// 					symbol: 'PRO',
-	// 					totalSupply: BigInt('10000000000000000000000'), // 10,000 tokens
-	// 					curveSize: 1, // pro curve
-	// 				},
-	// 			},
-	// 		},
-	// 		// Sample buy for pro token
-	// 		{
-	// 			event: {
-	// 				blockNumber: 2,
-	// 				timestamp: new Date(),
-	// 				transactionHash: 'tx7',
-	// 			},
-	// 			parsed: {
-	// 				eventName: 'Buy',
-	// 				args: {
-	// 					buyer: '0x60D9637A7ad741a7F60595045d29960326c1843A',
-	// 					tokenAddress: proTokenAddress,
-	// 					ethAmountIn: BigInt('200000000000000000000'), // 200 BONE
-	// 					tokenAmountOut: BigInt('1000000000000000000000'), // 1,000 tokens
-	// 				},
-	// 			},
-	// 		},
-	// 	]
-
-	// 	console.log('\n=== Processing Pro Token Events ===')
-	// 	await this.processTokenEvents(proTokenAddress, proTokenEvents as any)
-
-	// 	console.log('\n=== Flushing Pending Updates ===')
-	// 	await this.flushPendingUpdates()
-	// }
 
 	@Cron(CronExpression.EVERY_5_SECONDS)
 	async processEvents() {
@@ -306,13 +173,7 @@ export class EventProcessorService {
 
 					// Initialize accumulator for this token if it doesn't exist
 					if (!this.pendingUpdates.has(token._id.toString())) {
-						this.pendingUpdates.set(token._id.toString(), {
-							totalRaisedInBoneBig: BigInt(token.totalRaisedInBoneBig),
-							virtualY: BigInt(token.virtualY),
-							virtualX: BigInt(token.virtualX),
-							tokenAmountChange: BigInt(0),
-							ethAmountChange: BigInt(0),
-						})
+						this.pendingUpdates.set(token._id.toString(), true)
 					}
 				}
 
@@ -335,24 +196,6 @@ export class EventProcessorService {
 		const tokenAmount = isBuy
 			? eventData.args.tokenAmountOut
 			: eventData.args.tokenAmountIn
-
-		// Get current accumulated updates
-		const updates = this.pendingUpdates.get(token._id.toString())
-
-		// Update the accumulator
-		updates.ethAmountChange = isBuy
-			? updates.ethAmountChange + BigInt(ethAmount)
-			: updates.ethAmountChange - BigInt(ethAmount)
-
-		updates.tokenAmountChange = isBuy
-			? updates.tokenAmountChange - BigInt(tokenAmount)
-			: updates.tokenAmountChange + BigInt(tokenAmount)
-
-		// Calculate new totals
-		updates.totalRaisedInBoneBig =
-			BigInt(token.totalRaisedInBoneBig) + updates.ethAmountChange
-		updates.virtualY = BigInt(token.virtualY) + updates.ethAmountChange
-		updates.virtualX = BigInt(token.virtualX) + updates.tokenAmountChange
 
 		// Store trade information
 		await this.handleTrades(
@@ -428,36 +271,56 @@ export class EventProcessorService {
 	private async flushPendingUpdates() {
 		const updates = []
 
-		for (const [tokenId, accumulatedUpdates] of this.pendingUpdates.entries()) {
-			const { totalRaisedInBoneBig, virtualY, virtualX } = accumulatedUpdates
+		for (const [tokenId, isUpdate] of this.pendingUpdates.entries()) {
+			if (!isUpdate) {
+				continue
+			}
+
+			const token = await this.tokenModel.findById(tokenId)
+
+			const virtualY = await this.walletClient.readContract({
+				abi: sharbiFunAbi,
+				address: this.configService.get<`0x${string}`>('SHARBI_FUN_ADDRESS'),
+				functionName: 'virtualY',
+				args: [token.address as `0x${string}`],
+			})
+
+			const virtualX = await this.walletClient.readContract({
+				abi: sharbiFunAbi,
+				address: this.configService.get<`0x${string}`>('SHARBI_FUN_ADDRESS'),
+				functionName: 'virtualX',
+				args: [token.address as `0x${string}`],
+			})
 
 			const newTokenPrice = this.calculateTokenPrice(virtualY, virtualX)
 
-			const token = await this.tokenModel.findById(tokenId)
 			const newMarketCap =
-				newTokenPrice.priceInBone *
-				Number(BigInt(token.tokenSupply) / BigInt(10n ** 18n))
+				(newTokenPrice.priceInBone *
+					Number(BigInt(token.tokenSupply) / BigInt(10n ** 14n))) /
+				10000
 
-			const newMarketCapBig = BigInt(newMarketCap) * BigInt(10 ** 18)
+			const totalRaisedInBone =
+				Number(
+					(virtualY - BigInt(token.bondingCurveParams.y0)) / BigInt(10n ** 14n),
+				) / 10000
+
+			token.bondingCurveParams.virtualY = virtualY.toString()
+			token.bondingCurveParams.virtualX = virtualX.toString()
 
 			updates.push(
 				this.tokenModel.updateOne(
 					{ _id: tokenId },
 					{
 						$set: {
-							totalRaisedInBoneBig: totalRaisedInBoneBig.toString(),
-							totalRaisedInBone:
-								Number(totalRaisedInBoneBig / BigInt(10n ** 14n)) / 10000,
-							virtualY: virtualY.toString(),
-							virtualX: virtualX.toString(),
-							tokenPriceInBoneBig: newTokenPrice.priceInBigInt.toString(),
+							totalRaisedInBone: totalRaisedInBone,
 							tokenPriceInBone: newTokenPrice.priceInBone,
-							marketCapInBoneBig: newMarketCapBig.toString(),
 							marketCapInBone: newMarketCap,
+							bondingCurveParams: token.bondingCurveParams,
 						},
 					},
 				),
 			)
+			this.handleUpdates(tokenId)
 		}
 
 		if (updates.length > 0) {
@@ -490,6 +353,41 @@ export class EventProcessorService {
 				creator: creator._id,
 			})
 		}
+
+		const k = await this.walletClient.readContract({
+			abi: sharbiFunAbi,
+			address: this.configService.get<`0x${string}`>('SHARBI_FUN_ADDRESS'),
+			functionName: 'K',
+			args: [token.address as `0x${string}`],
+		})
+
+		const x1 = await this.walletClient.readContract({
+			abi: sharbiFunAbi,
+			address: this.configService.get<`0x${string}`>('SHARBI_FUN_ADDRESS'),
+			functionName: 'X1',
+			args: [token.address as `0x${string}`],
+		})
+
+		const y1 = await this.walletClient.readContract({
+			abi: sharbiFunAbi,
+			address: this.configService.get<`0x${string}`>('SHARBI_FUN_ADDRESS'),
+			functionName: 'Y1',
+			args: [token.address as `0x${string}`],
+		})
+
+		const x0 = await this.walletClient.readContract({
+			abi: sharbiFunAbi,
+			address: this.configService.get<`0x${string}`>('SHARBI_FUN_ADDRESS'),
+			functionName: 'X0',
+			args: [token.address as `0x${string}`],
+		})
+		const y0 = await this.walletClient.readContract({
+			abi: sharbiFunAbi,
+			address: this.configService.get<`0x${string}`>('SHARBI_FUN_ADDRESS'),
+			functionName: 'Y0',
+			args: [token.address as `0x${string}`],
+		})
+
 		token.launched = true
 		token.address = getAddress(eventData.args.tokenAddress)
 		token.name = eventData.args.name
@@ -498,27 +396,25 @@ export class EventProcessorService {
 		token.bondingCurve = eventData.args.curveSize === 0 ? 'beginner' : 'pro'
 		token.donate = 'no'
 		token.totalRaisedInBone = 0
-		token.totalRaisedInBoneBig = '0'
 
-		let virtualY = BigInt(0)
-		const virtualX =
-			(eventData.args.totalSupply * BigInt(11000)) / BigInt(10000)
-
-		if (eventData.args.curveSize === 0) {
-			virtualY = BigInt(700000000) * BigInt(10) ** BigInt(12)
-		} else {
-			virtualY = BigInt(3000000000) * BigInt(10) ** BigInt(12)
+		token.bondingCurveParams = {
+			k: k.toString(),
+			x1: x1.toString(),
+			y1: y1.toString(),
+			x0: x0.toString(),
+			y0: y0.toString(),
+			virtualX: '0',
+			virtualY: '0',
 		}
-		token.virtualY = virtualY.toString()
-		token.virtualX = virtualX.toString()
-		const tokenPrice = virtualY / virtualX
-		const marketCap =
-			tokenPrice * (eventData.args.totalSupply / BigInt(10 ** 18))
 
-		token.tokenPriceInBoneBig = tokenPrice.toString()
-		token.tokenPriceInBone = Number(tokenPrice / BigInt(10 ** 14)) / 10000
-		token.marketCapInBoneBig = marketCap.toString()
-		token.marketCapInBone = Number(marketCap / BigInt(10 ** 14)) / 10000
+		const tokenPrice = this.calculateTokenPrice(x0, y0)
+		const marketCap =
+			(tokenPrice.priceInBone *
+				Number(eventData.args.totalSupply / BigInt(10n ** 14n))) /
+			10000
+
+		token.tokenPriceInBone = tokenPrice.priceInBone
+		token.marketCapInBone = marketCap
 
 		await token.save()
 
@@ -566,6 +462,36 @@ export class EventProcessorService {
 			token.donate = 'yes'
 			await token.save()
 		}
+	}
+
+	private async handleUpdates(tokenId: string) {
+		const token = await this.tokenModel.findById(tokenId)
+		const volume24 = await this.tokenTradesModel
+			.aggregate([
+				{
+					$match: {
+						token: token._id,
+						createdAt: {
+							$gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
+						},
+					},
+				},
+				{
+					$group: {
+						_id: null,
+						total: { $sum: '$boneAmount' },
+					},
+				},
+			])
+			.exec()
+
+		this.wsUpdatesGateway.broadcastTokenUpdate(token.address, 'tokenUpdate', {
+			totalRaisedInBone: token.totalRaisedInBone,
+			tokenPriceInBone: token.tokenPriceInBone,
+			marketCapInBone: token.marketCapInBone,
+			bondingCurveParams: token.bondingCurveParams,
+			volume24: volume24[0]?.total || 0,
+		})
 	}
 
 	private async handleTrades(
@@ -673,15 +599,6 @@ export class EventProcessorService {
 			'tokenHoldersUpdated',
 			{},
 		)
-
-		this.wsUpdatesGateway.broadcastTokenUpdate(token.address, 'tokenUpdate', {
-			totalRaisedInBone: token.totalRaisedInBone,
-			tokenPriceInBone: token.tokenPriceInBone,
-			marketCapInBone: token.marketCapInBone,
-			virtualX: token.virtualX,
-			virtualY: token.virtualY,
-			volume24: token.volume24,
-		})
 	}
 
 	private async handleCompleteSharbiFunEvent(
@@ -695,25 +612,13 @@ export class EventProcessorService {
 		})
 
 		if (token) {
-			let chain: Chain = shibariumTestnet
-			if (this.configService.get<string>('CHAIN') === 'mainnet') {
-				chain = shibarium
-			}
-			const account = privateKeyToAccount(
-				this.configService.get<`0x${string}`>('PRIVATE_KEY'),
-			)
-			const client = createWalletClient({
-				account,
-				chain,
-				transport: http(this.configService.get<string>('RPC_URL')),
-			}).extend(publicActions)
-			const { request } = await client.simulateContract({
+			const { request } = await this.walletClient.simulateContract({
 				abi: sharbiFunAbi,
 				address: this.configService.get<`0x${string}`>('SHARBI_FUN_ADDRESS'),
 				functionName: 'graduate',
 				args: [token.address as `0x${string}`],
 			})
-			await client.writeContract(request)
+			await this.walletClient.writeContract(request)
 		}
 	}
 
