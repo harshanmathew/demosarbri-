@@ -27,7 +27,7 @@ import { WsUpdatesModule } from './ws-updates/ws-updates.module'
 		AuthModule,
 		UploadsModule,
 		TokensModule,
-		// WatcherModule,
+		WatcherModule,
 		WsUpdatesModule,
 	],
 	controllers: [AppController],
