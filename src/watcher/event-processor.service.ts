@@ -292,18 +292,16 @@ export class EventProcessorService {
 
 			const newMarketCap =
 				(newTokenPrice.priceInBone *
-					Number(BigInt(token.tokenSupply) / BigInt(10n ** 14n))) /
-				10000
+					Number(BigInt(token.tokenSupply) / BigInt(10n ** 10n))) /
+				100000000
 
 			const totalRaisedInBone =
 				Number(
-					(virtualY - BigInt(token.bondingCurveParams.y0)) / BigInt(10n ** 14n),
-				) / 10000
+					(virtualY - BigInt(token.bondingCurveParams.y0)) / BigInt(10n ** 10n),
+				) / 100000000
 
 			token.bondingCurveParams.virtualY = virtualY.toString()
 			token.bondingCurveParams.virtualX = virtualX.toString()
-
-			console.log('New market cap:', newMarketCap)
 
 			updates.push(
 				this.tokenModel.updateOne(
@@ -409,8 +407,8 @@ export class EventProcessorService {
 		const tokenPrice = this.calculateTokenPrice(x0, y0)
 		const marketCap =
 			(tokenPrice.priceInBone *
-				Number(eventData.args.totalSupply / BigInt(10n ** 14n))) /
-			10000
+				Number(eventData.args.totalSupply / BigInt(10n ** 10n))) /
+			100000000
 
 		token.tokenPriceInBone = tokenPrice.priceInBone
 		token.marketCapInBone = marketCap
@@ -422,7 +420,7 @@ export class EventProcessorService {
 			type: 'created',
 			boneAmount: 0,
 			tokenAmount:
-				Number(eventData.args.totalSupply / BigInt(10 ** 14)) / 10000,
+				Number(eventData.args.totalSupply / BigInt(10n ** 10n)) / 100000000,
 			token: token._id,
 			timestamp: event.timestamp,
 		})
@@ -506,8 +504,9 @@ export class EventProcessorService {
 		const token = await this.getToken(tokenAddress)
 		const user = await this.createUserIfNotExists(trader)
 
-		const tradeBoneAmount = Number(boneAmount / BigInt(10 ** 14)) / 10000
-		const tradeTokenAmount = Number(tokenAmount / BigInt(10 ** 14)) / 10000
+		const tradeBoneAmount = Number(boneAmount / BigInt(10n ** 10n)) / 100000000
+		const tradeTokenAmount =
+			Number(tokenAmount / BigInt(10n ** 10n)) / 100000000
 
 		const tokenTrade = new this.tokenTradesModel({
 			token: token._id,
@@ -549,7 +548,8 @@ export class EventProcessorService {
 				tokenHolders.balanceInBig = BigInt(0).toString()
 			}
 			tokenHolders.balance =
-				Number(BigInt(tokenHolders.balanceInBig) / BigInt(10 ** 14)) / 10000
+				Number(BigInt(tokenHolders.balanceInBig) / BigInt(10n ** 10n)) /
+				100000000
 
 			await tokenHolders.save()
 		} else {
