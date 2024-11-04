@@ -9,6 +9,7 @@ import { CreateTokenDto } from './dto/create-token.dto'
 import { ChartQueryDto, PaginationQueryDto } from './dto/pagination-query.dto'
 import {
 	ChartResponseDto,
+	LatestActivityDto,
 	TokenHoldersResponseDto,
 	TokenTradesResponseDto,
 	TokenWithVolumeDto,
@@ -90,6 +91,7 @@ export class TokensController {
 	@ApiResponse({
 		status: 200,
 		description: 'Return the latest activity.',
+		type: [LatestActivityDto],
 	})
 	findLatestActivity() {
 		return this.tokensService.findLatestActivity()

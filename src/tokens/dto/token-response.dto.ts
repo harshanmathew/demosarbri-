@@ -175,3 +175,20 @@ export class ChartResponseDto {
 	@ApiProperty()
 	close: number
 }
+
+export class LatestActivityDto {
+	@ApiProperty()
+	token: Token
+
+	@ApiProperty()
+	user: User
+
+	@ApiProperty()
+	type: 'buy' | 'sell'
+
+	@ApiProperty()
+	boneAmount: number
+
+	@ApiProperty()
+	tokenAmount: number
+}
