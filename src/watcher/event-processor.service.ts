@@ -254,17 +254,13 @@ export class EventProcessorService {
 		virtualY: bigint,
 		virtualX: bigint,
 	): {
-		priceInBigInt: bigint
 		priceInBone: number
 	} {
 		// Scale up before division to maintain precision
 		// biome-ignore lint/style/useNamingConvention: <explanation>
-		const SCALE = BigInt(10) ** BigInt(18)
-		const scaledPrice = (virtualY * SCALE) / virtualX
-
+		const price = Number(virtualY) / Number(virtualX)
 		return {
-			priceInBigInt: scaledPrice,
-			priceInBone: Number(scaledPrice / BigInt(10 ** 14)) / 10000,
+			priceInBone: price,
 		}
 	}
 
@@ -292,7 +288,12 @@ export class EventProcessorService {
 				args: [token.address as `0x${string}`],
 			})
 
+			console.log('Virtual Y:', virtualY)
+			console.log('Virtual X:', virtualX)
+
 			const newTokenPrice = this.calculateTokenPrice(virtualY, virtualX)
+
+			console.log('New token price:', newTokenPrice)
 
 			const newMarketCap =
 				(newTokenPrice.priceInBone *
@@ -306,6 +307,8 @@ export class EventProcessorService {
 
 			token.bondingCurveParams.virtualY = virtualY.toString()
 			token.bondingCurveParams.virtualX = virtualX.toString()
+
+			console.log('New market cap:', newMarketCap)
 
 			updates.push(
 				this.tokenModel.updateOne(
