@@ -288,12 +288,7 @@ export class EventProcessorService {
 				args: [token.address as `0x${string}`],
 			})
 
-			console.log('Virtual Y:', virtualY)
-			console.log('Virtual X:', virtualX)
-
 			const newTokenPrice = this.calculateTokenPrice(virtualY, virtualX)
-
-			console.log('New token price:', newTokenPrice)
 
 			const newMarketCap =
 				(newTokenPrice.priceInBone *

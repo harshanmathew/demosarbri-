@@ -52,8 +52,8 @@ export class TokenTradesDto {
 	@ApiProperty()
 	tokenAmount: number
 
-	@ApiProperty()
-	type: string
+	@ApiProperty({ enum: ['buy', 'sell'] })
+	type: 'buy' | 'sell'
 
 	@ApiProperty()
 	timestamp: Date
