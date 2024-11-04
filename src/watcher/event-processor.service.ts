@@ -354,6 +354,8 @@ export class EventProcessorService {
 			})
 		}
 
+		token.address = getAddress(eventData.args.tokenAddress)
+
 		const k = await this.walletClient.readContract({
 			abi: sharbiFunAbi,
 			address: this.configService.get<`0x${string}`>('SHARBI_FUN_ADDRESS'),
@@ -389,7 +391,6 @@ export class EventProcessorService {
 		})
 
 		token.launched = true
-		token.address = getAddress(eventData.args.tokenAddress)
 		token.name = eventData.args.name
 		token.ticker = eventData.args.symbol
 		token.tokenSupply = eventData.args.totalSupply.toString()
