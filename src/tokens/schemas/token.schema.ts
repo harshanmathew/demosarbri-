@@ -7,31 +7,31 @@ export type TokenDocument = Token & Document
 
 @Schema()
 class BondingCurveParams {
-	@Prop({ default: false })
+	@Prop({ default: '0' })
 	@ApiProperty({ type: String })
 	k: string
 
-	@Prop({ default: false })
+	@Prop({ default: '0' })
 	@ApiProperty({ type: String })
 	x1: string
 
-	@Prop({ default: false })
+	@Prop({ default: '0' })
 	@ApiProperty({ type: String })
 	y1: string
 
-	@Prop({ default: false })
+	@Prop({ default: '0' })
 	@ApiProperty({ type: String })
 	x0: string
 
-	@Prop({ default: false })
+	@Prop({ default: '0' })
 	@ApiProperty({ type: String })
 	y0: string
 
-	@Prop({ default: false })
+	@Prop({ default: '0' })
 	@ApiProperty({ type: String })
 	virtualX: string
 
-	@Prop({ default: false })
+	@Prop({ default: '0' })
 	@ApiProperty({ type: String })
 	virtualY: string
 }
