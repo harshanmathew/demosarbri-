@@ -21,7 +21,7 @@ export class TokenHolders extends Document {
 	@Prop({ required: true, type: String, default: '0' })
 	balanceInBig: string
 
-	@Prop({ required: true, type: String, default: 0 })
+	@Prop({ required: true, type: Number, default: 0 })
 	balance: number
 }
 
