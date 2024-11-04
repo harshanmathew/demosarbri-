@@ -97,6 +97,10 @@ export class WsUpdatesGateway {
 	}
 
 	broadcastTokenUpdate(tokenAddress: string, event: string, data: any) {
+		console.log('broadcastTokenUpdate', tokenAddress, event, data)
+		if (!tokenAddress) {
+			return
+		}
 		const subscribers = this.tokenSubscriptions.get(getAddress(tokenAddress))
 		if (subscribers) {
 			for (const client of subscribers) {
