@@ -220,13 +220,13 @@ export class TokensService {
 		const skip = (currentPage - 1) * pageSize
 
 		const total = await this.tokenHoldersModel
-			.countDocuments({ token: tokenId })
+			.countDocuments({ token: new Types.ObjectId(tokenId) })
 			.exec()
 
 		const totalPages = Math.ceil(total / pageSize)
 
 		const holders = await this.tokenHoldersModel
-			.find({ token: tokenId })
+			.find({ token: new Types.ObjectId(tokenId) })
 			.skip(skip)
 			.limit(pageSize)
 			.sort({ balance: -1 })
@@ -246,11 +246,11 @@ export class TokensService {
 		const skip = (currentPage - 1) * pageSize
 
 		const total = await this.tokenTradesModel
-			.countDocuments({ token: tokenId })
+			.countDocuments({ token: new Types.ObjectId(tokenId) })
 			.exec()
 		const totalPages = Math.ceil(total / pageSize)
 		const trades = await this.tokenTradesModel
-			.find({ token: tokenId })
+			.find({ token: new Types.ObjectId(tokenId) })
 			.skip(skip)
 			.limit(pageSize)
 			.sort({ createdAt: -1 })
