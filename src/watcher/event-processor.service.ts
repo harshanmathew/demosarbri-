@@ -446,6 +446,7 @@ export class EventProcessorService {
 			websiteLink: token.websiteLink,
 			description: token.description,
 			image: token.image,
+			bondingCurveParams: token.bondingCurveParams,
 		})
 	}
 

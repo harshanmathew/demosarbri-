@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger'
+import { BondingCurveParamsDto } from 'src/tokens/dto/token-response.dto'
 
 class CreatorDto {
 	@ApiProperty()
@@ -32,6 +33,9 @@ export class TokenDto {
 
 	@ApiProperty()
 	bondingCurveStatus: string
+
+	@ApiProperty()
+	bondingCurveParams: BondingCurveParamsDto
 }
 
 export class RecentlyLaunchedResponseDto {

@@ -15,7 +15,11 @@ import { TokenDto } from 'src/ws-updates/dto/recently-launched-response.dto'
 import { getAddress } from 'viem'
 import { CreateTokenDto } from './dto/create-token.dto'
 import { ChartQueryDto, PaginationQueryDto } from './dto/pagination-query.dto'
-import { TokenWithVolumeDto, UserDto } from './dto/token-response.dto'
+import {
+	BondingCurveParamsDto,
+	TokenWithVolumeDto,
+	UserDto,
+} from './dto/token-response.dto'
 import { UpdateTokenDto } from './dto/update-token.dto'
 import {
 	TokenHolders,
@@ -171,6 +175,7 @@ export class TokensService {
 			},
 			marketCap: token.marketCapInBone,
 			bondingCurveStatus: token.bondingCurve,
+			bondingCurveParams: token.bondingCurveParams,
 		}))
 
 		return {
