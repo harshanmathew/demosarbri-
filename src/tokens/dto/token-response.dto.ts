@@ -176,19 +176,44 @@ export class ChartResponseDto {
 	close: number
 }
 
+export class TokenActivityDto {
+	@ApiProperty({ type: String })
+	name: string
+
+	@ApiProperty({ type: String })
+	ticker: string
+
+	@ApiProperty({ type: String })
+	image: string
+
+	@ApiProperty({ type: String })
+	address: string
+}
+
+export class UserActivityDto {
+	@ApiProperty({ type: String })
+	username?: string
+
+	@ApiProperty({ type: String })
+	address: string
+
+	@ApiProperty({ type: String })
+	profileImage?: string
+}
+
 export class LatestActivityDto {
-	@ApiProperty()
-	token: Token
+	@ApiProperty({ type: TokenActivityDto })
+	token: TokenActivityDto
 
-	@ApiProperty()
-	user: User
+	@ApiProperty({ type: UserActivityDto })
+	user: UserActivityDto
 
-	@ApiProperty()
+	@ApiProperty({ enum: ['buy', 'sell'] })
 	type: 'buy' | 'sell'
 
-	@ApiProperty()
+	@ApiProperty({ type: Number })
 	boneAmount: number
 
-	@ApiProperty()
+	@ApiProperty({ type: Number })
 	tokenAmount: number
 }
