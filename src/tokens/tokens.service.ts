@@ -204,7 +204,7 @@ export class TokensService {
 	async findLatestActivity() {
 		return this.userActivityModel
 			.find({ type: { $in: ['buy', 'sell'] } })
-			.sort({ createdAt: -1 })
+			.sort({ timestamp: -1 })
 			.populate({
 				path: 'user',
 				select: 'username address profileImage',

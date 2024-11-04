@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
+import { PaginationQueryDto } from 'src/tokens/dto/pagination-query.dto'
 import {
 	TokenHolders,
 	TokenHoldersDocument,
@@ -306,5 +307,270 @@ export class UsersService {
 				nonGraduatedTokensValue: 0,
 			}
 		)
+	}
+
+	async findAllHoldings(userId: string, queryParams: PaginationQueryDto) {
+		const { page = 1, limit = 10 } = queryParams
+		const currentPage = Math.max(1, page)
+		const pageSize = Math.max(1, limit)
+		const skip = (currentPage - 1) * pageSize
+
+		const holdings = await this.tokenHoldersModel
+			.find({ holder: new Types.ObjectId(userId) })
+			.populate<{ token: Token }>('token')
+			.skip(skip)
+			.limit(pageSize)
+
+		const total = await this.tokenHoldersModel
+			.countDocuments({ holder: new Types.ObjectId(userId) })
+			.exec()
+		return {
+			holdings: holdings.map(holding => {
+				const totalRaised =
+					BigInt(holding.token?.bondingCurveParams?.virtualY) -
+					BigInt(holding.token?.bondingCurveParams?.y0)
+				const totalCurve =
+					BigInt(holding.token?.bondingCurveParams?.y1) -
+					BigInt(holding.token?.bondingCurveParams?.y0)
+				const percentage = Number((totalRaised * BigInt(100)) / totalCurve)
+				return {
+					id: holding.token._id,
+					address: holding.token.address,
+					name: holding.token.name,
+					ticker: holding.token.ticker,
+					image: holding.token.image,
+					marketCapInBone: holding.token.marketCapInBone,
+					tokenPriceInBone: holding.token.tokenPriceInBone,
+					bondingCurvePercentage: percentage,
+					balance: holding.balance,
+				}
+			}),
+			total,
+			currentPage,
+		}
+	}
+
+	async findCreatedTokens(
+		userId: string,
+		queryParams: PaginationQueryDto,
+		type: 'all' | 'graduated' | 'non-graduated' = 'all',
+	) {
+		const { page = 1, limit = 10 } = queryParams
+		const currentPage = Math.max(1, page)
+		const pageSize = Math.max(1, limit)
+		const skip = (currentPage - 1) * pageSize
+
+		const match: any = {
+			creator: new Types.ObjectId(userId),
+			launched: true,
+		}
+
+		if (type === 'non-graduated') {
+			match.graduated = false
+		} else if (type === 'graduated') {
+			match.graduated = true
+		}
+
+		const result = await this.tokenModel.aggregate([
+			{
+				$match: match,
+			},
+			{
+				// Get transaction count
+				$lookup: {
+					from: 'useractivities',
+					let: { tokenId: '$_id' },
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [
+										{ $eq: ['$token', '$$tokenId'] },
+										{ $in: ['$type', ['buy', 'sell']] },
+									],
+								},
+							},
+						},
+						{
+							$count: 'count',
+						},
+					],
+					as: 'transactionStats',
+				},
+			},
+			{
+				// Get unique holders count
+				$lookup: {
+					from: 'tokenholders',
+					let: { tokenId: '$_id' },
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [
+										{ $eq: ['$token', '$$tokenId'] },
+										{ $gt: ['$balance', 0] },
+									],
+								},
+							},
+						},
+						{
+							$count: 'count',
+						},
+					],
+					as: 'holdersStats',
+				},
+			},
+			{
+				$project: {
+					_id: 1,
+					name: 1,
+					image: 1,
+					ticker: 1,
+					address: 1,
+					marketcap: { $ifNull: ['$marketCapInBone', 0] },
+					bondingCurveParams: 1,
+					transactionCount: {
+						$ifNull: [{ $arrayElemAt: ['$transactionStats.count', 0] }, 0],
+					},
+					holdersCount: {
+						$ifNull: [{ $arrayElemAt: ['$holdersStats.count', 0] }, 0],
+					},
+				},
+			},
+			{
+				$facet: {
+					metadata: [{ $count: 'total' }],
+					data: [{ $skip: skip }, { $limit: pageSize }],
+				},
+			},
+		])
+
+		const projects = result[0].data || []
+		const total = result[0].metadata[0]?.total || 0
+
+		return {
+			tokens: projects.map(token => {
+				const totalRaised =
+					BigInt(token?.bondingCurveParams?.virtualY) -
+					BigInt(token?.bondingCurveParams?.y0)
+				const totalCurve =
+					BigInt(token?.bondingCurveParams?.y1) -
+					BigInt(token?.bondingCurveParams?.y0)
+				const percentage = Number((totalRaised * BigInt(100)) / totalCurve)
+				return {
+					id: token._id,
+					address: token.address,
+					name: token.name,
+					ticker: token.ticker,
+					image: token.image,
+					bondingCurvePercentage: percentage,
+					transactionCount: token.transactionCount,
+					holdersCount: token.holdersCount,
+				}
+			}),
+			total,
+			currentPage,
+		}
+	}
+
+	async findUserTrades(userId: string, queryParams: PaginationQueryDto) {
+		const { page = 1, limit = 10 } = queryParams
+		const currentPage = Math.max(1, page)
+		const pageSize = Math.max(1, limit)
+		const skip = (currentPage - 1) * pageSize
+
+		const trades = await this.userActivity
+			.find({
+				user: new Types.ObjectId(userId),
+				type: { $in: ['buy', 'sell'] },
+			})
+			.populate<{ token: Token }>('token')
+			.sort({ timestamp: -1 })
+			.skip(skip)
+			.limit(pageSize)
+
+		const total = await this.userActivity
+			.countDocuments({
+				user: new Types.ObjectId(userId),
+				type: { $in: ['buy', 'sell'] },
+			})
+			.exec()
+
+		return {
+			trades: trades.map(trade => ({
+				id: trade._id,
+				type: trade.type,
+				boneAmount: trade.boneAmount,
+				tokenAmount: trade.tokenAmount,
+				token: {
+					id: trade.token._id,
+					address: trade.token.address,
+					name: trade.token.name,
+					ticker: trade.token.ticker,
+					image: trade.token.image,
+				},
+				timestamp: trade.timestamp,
+			})),
+			total,
+			currentPage,
+		}
+	}
+
+	async findUserProjectTrades(userId: string, queryParams: PaginationQueryDto) {
+		const { page = 1, limit = 10 } = queryParams
+		const currentPage = Math.max(1, page)
+		const pageSize = Math.max(1, limit)
+		const skip = (currentPage - 1) * pageSize
+
+		const userTokens = await this.tokenModel.find(
+			{ creator: new Types.ObjectId(userId), launched: true },
+			{ _id: 1 },
+		)
+
+		const tokenIds = userTokens.map(token => token._id)
+
+		const trades = await this.userActivity
+			.find({
+				type: { $in: ['buy', 'sell'] },
+				token: { $in: tokenIds },
+			})
+			.populate<{ token: Token }>('token')
+			.populate<{ user: User }>('user')
+			.sort({ timestamp: -1 })
+			.skip(skip)
+			.limit(pageSize)
+
+		const total = await this.userActivity
+			.countDocuments({
+				type: { $in: ['buy', 'sell'] },
+				token: { $in: tokenIds },
+			})
+			.exec()
+
+		return {
+			trades: trades.map(trade => ({
+				id: trade._id,
+				type: trade.type,
+				boneAmount: trade.boneAmount,
+				tokenAmount: trade.tokenAmount,
+				token: {
+					id: trade.token._id,
+					address: trade.token.address,
+					name: trade.token.name,
+					ticker: trade.token.ticker,
+					image: trade.token.image,
+				},
+				timestamp: trade.timestamp,
+				user: {
+					id: trade.user._id,
+					username: trade.user.username,
+					address: trade.user.address,
+					profileImage: trade.user.profileImage,
+				},
+			})),
+			total,
+			currentPage,
+		}
 	}
 }
