@@ -382,11 +382,12 @@ export class TokensService {
 			{
 				$lookup: {
 					from: 'tokens',
-					localField: 'token',
+					localField: '_id',
 					foreignField: '_id',
 					as: 'tokenInfo',
 				},
 			},
+
 			{
 				$unwind: '$tokenInfo',
 			},
