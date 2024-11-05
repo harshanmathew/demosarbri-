@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Auth } from 'src/auth/auth.decorator'
+import { TokenDto } from 'src/users/dto/user-response.dto'
 import { User } from 'src/users/schemas/user.schemas'
 import { UserInfo } from 'src/users/user.decorator'
 import { RecentlyLaunchedQueryDto } from 'src/ws-updates/dto/recently-launched-query.dto'
@@ -106,6 +107,17 @@ export class TokensController {
 	})
 	findRecentlyLaunched(@Query() queryParams: RecentlyLaunchedQueryDto) {
 		return this.tokensService.findRecentlyLaunched(queryParams)
+	}
+
+	@Get('/trending-tokens')
+	@ApiOperation({ summary: 'Get trending tokens' })
+	@ApiResponse({
+		status: 200,
+		description: 'Return trending tokens.',
+		type: [TokenDto],
+	})
+	findTrendingTokens() {
+		return this.tokensService.findTrendingTokens()
 	}
 
 	@Get(':tokenId/holders')
