@@ -1,11 +1,13 @@
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { Auth } from 'src/auth/auth.decorator'
-import { TokenDto } from 'src/users/dto/user-response.dto'
 import { User } from 'src/users/schemas/user.schemas'
 import { UserInfo } from 'src/users/user.decorator'
 import { RecentlyLaunchedQueryDto } from 'src/ws-updates/dto/recently-launched-query.dto'
-import { RecentlyLaunchedResponseDto } from 'src/ws-updates/dto/recently-launched-response.dto'
+import {
+	RecentlyLaunchedResponseDto,
+	TokenDto,
+} from 'src/ws-updates/dto/recently-launched-response.dto'
 import { CreateTokenDto } from './dto/create-token.dto'
 import { ChartQueryDto, PaginationQueryDto } from './dto/pagination-query.dto'
 import {
