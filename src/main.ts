@@ -27,6 +27,7 @@ async function bootstrap() {
 			'https://sharbi-fun-dev.vercel.app',
 			'http://localhost:3000', // for local development
 			'https://sharbi.buildverse.app',
+			'https://sharbi.kvmanas.com',
 		],
 		methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
 		allowedHeaders: [
