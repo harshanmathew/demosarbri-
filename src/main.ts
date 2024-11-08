@@ -10,56 +10,75 @@ async function bootstrap() {
 	const configService = app.get(ConfigService)
 	const port = configService.get<number>('PORT') || 3000
 
-	// app.useGlobalPipes(
-	// 	new ValidationPipe({
-	// 		forbidNonWhitelisted: true,
-	// 		transform: true,
-	// 		whitelist: true,
-	// 		forbidUnknownValues: true,
-	// 	}),
-	// )
-	// //MongoExceptionFilter globally
-	// app.useGlobalFilters(new MongoExceptionFilter())
+	app.useGlobalPipes(
+		new ValidationPipe({
+			forbidNonWhitelisted: true,
+			transform: true,
+			whitelist: true,
+			forbidUnknownValues: true,
+		}),
+	)
 
-	// Enable CORS for all origins
+	app.useGlobalFilters(new MongoExceptionFilter())
+
+	// Enhanced CORS configuration
 	app.enableCors({
-		origin: '*',
+		origin: true, // or specify your domains: ['https://yourdomain.com']
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+		allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+		credentials: true,
+		maxAge: 3600, // Cache preflight requests for 1 hour
 	})
-	// Global timeout settings
-	// app.use((req, res, next) => {
-	// 	// console.log(req)
-	// 	res.setTimeout(30000) // 30 seconds timeout
-	// 	next()
-	// })
-	// app.enableCors({ origin: '*' })
-	// Ensure the server is not already listening
-	if (app.getHttpServer().listening) {
-		console.warn('🚨 Server is already listening on the specified port.')
-	} else {
-		// Configure Swagger options
-		// const config = new DocumentBuilder()
-		// 	.setTitle('Web3 Backend API')
-		// 	.setDescription('API documentation for the Web3 backend application')
-		// 	.setVersion('1.0')
-		// 	.addBearerAuth()
-		// 	.build()
 
-		// const document = SwaggerModule.createDocument(app, config)
+	// Improved timeout and header settings
+	app.use((req, res, next) => {
+		// Set necessary headers for Safari
+		res.setHeader('Keep-Alive', 'timeout=30, max=100')
+		res.setHeader('Connection', 'keep-alive')
 
-		// SwaggerModule.setup('api', app, document, {
-		// 	swaggerOptions: {
-		// 		persistAuthorization: true,
-		// 		docExpansion: 'none',
-		// 		tagsSorter: 'alpha',
-		// 		operationsSorter: 'alpha',
-		// 	},
-		// 	customSiteTitle: 'My API Docs',
-		// })
+		// Increase timeout for Safari
+		res.setTimeout(60000) // 60 seconds timeout
 
+		// Add Cache-Control headers
+		res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+		res.setHeader('Pragma', 'no-cache')
+		res.setHeader('Expires', '0')
+
+		next()
+	})
+
+	// Swagger configuration
+	const config = new DocumentBuilder()
+		.setTitle('Web3 Backend API')
+		.setDescription('API documentation for the Web3 backend application')
+		.setVersion('1.0')
+		.addBearerAuth()
+		.build()
+
+	const document = SwaggerModule.createDocument(app, config)
+
+	SwaggerModule.setup('api', app, document, {
+		swaggerOptions: {
+			persistAuthorization: true,
+			docExpansion: 'none',
+			tagsSorter: 'alpha',
+			operationsSorter: 'alpha',
+		},
+		customSiteTitle: 'My API Docs',
+	})
+
+	// Error handling for the server startup
+	try {
 		await app.listen(port)
 		console.log(`🚀 Server is running on http://localhost:${port}`)
 		console.log(`📚 Swagger UI available at http://localhost:${port}/api`)
+	} catch (error) {
+		console.error('Failed to start server:', error)
+		process.exit(1)
 	}
 }
 
-bootstrap()
+bootstrap().catch(err => {
+	console.error('Bootstrap failed:', err)
+	process.exit(1)
+})
