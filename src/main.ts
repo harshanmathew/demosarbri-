@@ -10,51 +10,51 @@ async function bootstrap() {
 	const configService = app.get(ConfigService)
 	const port = configService.get<number>('PORT') || 3000
 
-	app.useGlobalPipes(
-		new ValidationPipe({
-			forbidNonWhitelisted: true,
-			transform: true,
-			whitelist: true,
-			forbidUnknownValues: true,
-		}),
-	)
-	//MongoExceptionFilter globally
-	app.useGlobalFilters(new MongoExceptionFilter())
+	// app.useGlobalPipes(
+	// 	new ValidationPipe({
+	// 		forbidNonWhitelisted: true,
+	// 		transform: true,
+	// 		whitelist: true,
+	// 		forbidUnknownValues: true,
+	// 	}),
+	// )
+	// //MongoExceptionFilter globally
+	// app.useGlobalFilters(new MongoExceptionFilter())
 
 	// Enable CORS for all origins
 	app.enableCors({
 		origin: '*',
 	})
 	// Global timeout settings
-	app.use((req, res, next) => {
-		console.log(req)
-		res.setTimeout(30000) // 30 seconds timeout
-		next()
-	})
+	// app.use((req, res, next) => {
+	// 	// console.log(req)
+	// 	res.setTimeout(30000) // 30 seconds timeout
+	// 	next()
+	// })
 	// app.enableCors({ origin: '*' })
 	// Ensure the server is not already listening
 	if (app.getHttpServer().listening) {
 		console.warn('🚨 Server is already listening on the specified port.')
 	} else {
 		// Configure Swagger options
-		const config = new DocumentBuilder()
-			.setTitle('Web3 Backend API')
-			.setDescription('API documentation for the Web3 backend application')
-			.setVersion('1.0')
-			.addBearerAuth()
-			.build()
+		// const config = new DocumentBuilder()
+		// 	.setTitle('Web3 Backend API')
+		// 	.setDescription('API documentation for the Web3 backend application')
+		// 	.setVersion('1.0')
+		// 	.addBearerAuth()
+		// 	.build()
 
-		const document = SwaggerModule.createDocument(app, config)
+		// const document = SwaggerModule.createDocument(app, config)
 
-		SwaggerModule.setup('api', app, document, {
-			swaggerOptions: {
-				persistAuthorization: true,
-				docExpansion: 'none',
-				tagsSorter: 'alpha',
-				operationsSorter: 'alpha',
-			},
-			customSiteTitle: 'My API Docs',
-		})
+		// SwaggerModule.setup('api', app, document, {
+		// 	swaggerOptions: {
+		// 		persistAuthorization: true,
+		// 		docExpansion: 'none',
+		// 		tagsSorter: 'alpha',
+		// 		operationsSorter: 'alpha',
+		// 	},
+		// 	customSiteTitle: 'My API Docs',
+		// })
 
 		await app.listen(port)
 		console.log(`🚀 Server is running on http://localhost:${port}`)
