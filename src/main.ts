@@ -37,11 +37,20 @@ async function bootstrap() {
 			'Authorization',
 			'Referer',
 			'User-Agent',
+			'Access-Control-Allow-Origin',
+			'Access-Control-Allow-Credentials',
+			'Access-Control-Allow-Headers',
 		],
 		exposedHeaders: ['Authorization'],
 		credentials: true,
 		preflightContinue: false,
 		optionsSuccessStatus: 204,
+		maxAge: 3600, // Increase preflight cache duration
+	})
+	// Global timeout settings
+	app.use((req, res, next) => {
+		res.setTimeout(30000) // 30 seconds timeout
+		next()
 	})
 	// app.enableCors({ origin: '*' })
 	// Ensure the server is not already listening
