@@ -23,29 +23,7 @@ async function bootstrap() {
 
 	// Enable CORS for all origins
 	app.enableCors({
-		origin: [
-			'https://sharbi-fun-dev.vercel.app',
-			'http://localhost:3000', // for local development
-			'https://sharbi.buildverse.app',
-			'https://sharbi.kvmanas.com',
-		],
-		methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-		allowedHeaders: [
-			'Origin',
-			'Accept',
-			'Content-Type',
-			'Authorization',
-			'Referer',
-			'User-Agent',
-			'Access-Control-Allow-Origin',
-			'Access-Control-Allow-Credentials',
-			'Access-Control-Allow-Headers',
-		],
-		exposedHeaders: ['Authorization'],
-		credentials: true,
-		preflightContinue: false,
-		optionsSuccessStatus: 204,
-		maxAge: 3600, // Increase preflight cache duration
+		origin: '*',
 	})
 	// Global timeout settings
 	app.use((req, res, next) => {
