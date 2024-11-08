@@ -27,6 +27,7 @@ async function bootstrap() {
 	})
 	// Global timeout settings
 	app.use((req, res, next) => {
+		console.log('Request Timeout Middleware')
 		res.setTimeout(30000) // 30 seconds timeout
 		next()
 	})
