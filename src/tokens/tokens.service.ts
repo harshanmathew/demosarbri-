@@ -51,6 +51,22 @@ export class TokensService {
 	}
 
 	async update(address: string, updateTokenDto: UpdateTokenDto, user: User) {
+		// First find the token and populate creator
+		const token = await this.tokenModel.findOne({
+			address: getAddress(address),
+		})
+
+		if (!token) {
+			throw new NotFoundException(`Token with address "${address}" not found`)
+		}
+
+		// Check if the user is the token creator
+		if (token.creator._id.toString() !== user.id.toString()) {
+			throw new ForbiddenException(
+				'You are not authorized to update this token',
+			)
+		}
+
 		// Filter out undefined, null, and empty string values
 		const filteredUpdate = Object.entries(updateTokenDto).reduce(
 			(acc, [key, value]) => {
