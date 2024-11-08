@@ -42,21 +42,21 @@ export class EventWatcherService implements OnModuleInit {
 	async startWatching() {
 		let lastProcessedBlock = await this.getLastProcessedBlock()
 
-		console.log('Last processed block:', lastProcessedBlock)
+		//console.log('Last processed block:', lastProcessedBlock)
 
 		const processBlocksUntil = async (targetBlock: number) => {
 			while (lastProcessedBlock < targetBlock) {
 				const fromBlock = lastProcessedBlock + 1
 				const toBlock = Math.min(fromBlock + this.BATCH_SIZE - 1, targetBlock)
 
-				console.log(`Processing blocks ${fromBlock} to ${toBlock}`)
+				//console.log(`Processing blocks ${fromBlock} to ${toBlock}`)
 				const startTime = Date.now()
 				await this.processBlockRange(fromBlock, toBlock)
 				await this.updateLastProcessedBlock(toBlock)
 				const processingTime = (Date.now() - startTime) / 1000
-				console.log(
-					`Blocks ${fromBlock} to ${toBlock} processed in ${processingTime}s`,
-				)
+				// console.log(
+				// 	`Blocks ${fromBlock} to ${toBlock} processed in ${processingTime}s`,
+				// )
 				lastProcessedBlock = toBlock
 			}
 		}
@@ -66,7 +66,7 @@ export class EventWatcherService implements OnModuleInit {
 				await this.queueRpcRequest('getBlockNumber', []),
 			)
 
-			console.log('Current block:', currentBlock)
+			//console.log('Current block:', currentBlock)
 
 			await processBlocksUntil(currentBlock - 2) // Process all blocks except the last 2 (to account for potential reorgs)
 		}
