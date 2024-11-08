@@ -56,13 +56,24 @@ async function bootstrap() {
 
 		const userAgent = req.headers['user-agent'] || ''
 		const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent)
+		const isDirectNavigation = req.headers['sec-fetch-dest'] === 'document'
+		const acceptHeader = req.headers.accept || ''
+		const wantsHtml = acceptHeader.includes('text/html')
 
 		// Set proper content headers for Safari
-		if (isSafari) {
-			res.setHeader('Content-Type', 'application/json; charset=utf-8')
+		if (isSafari && isDirectNavigation) {
+			// Set headers specifically for Safari direct navigation
+			res.setHeader('Content-Type', 'application/json')
+			res.setHeader('Content-Disposition', 'inline')
 			res.setHeader('X-Content-Type-Options', 'nosniff')
-			res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate')
+			res.setHeader('Access-Control-Allow-Origin', '*')
+			res.setHeader('Access-Control-Allow-Methods', 'GET')
+			res.setHeader(
+				'Cache-Control',
+				'no-store, no-cache, must-revalidate, proxy-revalidate',
+			)
 			res.setHeader('Pragma', 'no-cache')
+			res.setHeader('Expires', '0')
 		}
 
 		// Add security headers
@@ -71,6 +82,31 @@ async function bootstrap() {
 			'Strict-Transport-Security',
 			'max-age=31536000; includeSubDomains',
 		)
+
+		if (isSafari && wantsHtml) {
+			const htmlResponse = `
+			  <!DOCTYPE html>
+			  <html>
+				<head>
+				  <title>Latest Activity Data</title>
+				  <meta charset="utf-8">
+				  <meta name="viewport" content="width=device-width, initial-scale=1">
+				  <script>
+					// Automatically redirect to json format
+					window.location.href = window.location.href + '?format=json';
+				  </script>
+				</head>
+				<body>
+				  <pre style="word-wrap: break-word; white-space: pre-wrap;">
+					test
+				  </pre>
+				</body>
+			  </html>
+			`
+
+			res.setHeader('Content-Type', 'text/html')
+			return res.send(htmlResponse)
+		}
 
 		// Handle preflight
 		if (req.method === 'OPTIONS') {
