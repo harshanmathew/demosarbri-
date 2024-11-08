@@ -376,4 +376,70 @@ export class TokensService {
 		const trades = await this.tokenTradesModel.aggregate(pipeline).exec()
 		return trades
 	}
+
+	async findTrendingTokens(): Promise<TokenDto[]> {
+		const now = new Date()
+		const hourAgo = new Date(now.getTime() - 60 * 60 * 1000)
+
+		return this.tokenTradesModel.aggregate([
+			{
+				$match: {
+					timestamp: {
+						$gte: hourAgo,
+					},
+				},
+			},
+			{
+				$group: {
+					_id: '$token',
+					total: { $sum: '$boneAmount' },
+				},
+			},
+			{
+				$lookup: {
+					from: 'tokens',
+					localField: '_id',
+					foreignField: '_id',
+					as: 'tokenInfo',
+				},
+			},
+
+			{
+				$unwind: '$tokenInfo',
+			},
+			{
+				$lookup: {
+					from: 'users',
+					localField: 'tokenInfo.creator',
+					foreignField: '_id',
+					as: 'creatorInfo',
+				},
+			},
+			{
+				$unwind: '$creatorInfo',
+			},
+			{
+				$project: {
+					img: '$tokenInfo.image',
+					name: '$tokenInfo.name',
+					symbol: '$tokenInfo.ticker',
+					description: '$tokenInfo.description',
+					address: '$tokenInfo.address',
+					creator: {
+						address: '$creatorInfo.address',
+						username: '$creatorInfo.username',
+					},
+					marketCap: '$tokenInfo.marketCapInBone',
+					bondingCurveStatus: '$tokenInfo.bondingCurve',
+					bondingCurveParams: '$tokenInfo.bondingCurveParams',
+				},
+			},
+			{
+				$sort: { total: -1 },
+			},
+			{
+				$limit: 10,
+			},
+		])
+	}
 }

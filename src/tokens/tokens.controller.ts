@@ -4,7 +4,10 @@ import { Auth } from 'src/auth/auth.decorator'
 import { User } from 'src/users/schemas/user.schemas'
 import { UserInfo } from 'src/users/user.decorator'
 import { RecentlyLaunchedQueryDto } from 'src/ws-updates/dto/recently-launched-query.dto'
-import { RecentlyLaunchedResponseDto } from 'src/ws-updates/dto/recently-launched-response.dto'
+import {
+	RecentlyLaunchedResponseDto,
+	TokenDto,
+} from 'src/ws-updates/dto/recently-launched-response.dto'
 import { CreateTokenDto } from './dto/create-token.dto'
 import { ChartQueryDto, PaginationQueryDto } from './dto/pagination-query.dto'
 import {
@@ -106,6 +109,17 @@ export class TokensController {
 	})
 	findRecentlyLaunched(@Query() queryParams: RecentlyLaunchedQueryDto) {
 		return this.tokensService.findRecentlyLaunched(queryParams)
+	}
+
+	@Get('/trending-tokens')
+	@ApiOperation({ summary: 'Get trending tokens' })
+	@ApiResponse({
+		status: 200,
+		description: 'Return trending tokens.',
+		type: [TokenDto],
+	})
+	findTrendingTokens() {
+		return this.tokensService.findTrendingTokens()
 	}
 
 	@Get(':tokenId/holders')

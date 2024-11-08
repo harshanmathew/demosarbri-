@@ -22,7 +22,28 @@ async function bootstrap() {
 	app.useGlobalFilters(new MongoExceptionFilter())
 
 	// Enable CORS for all origins
-	app.enableCors({ origin: '*' })
+	app.enableCors({
+		origin: [
+			'https://sharbi-fun-dev.vercel.app',
+			'http://localhost:3000', // for local development
+			'https://sharbi.buildverse.app',
+			'https://sharbi.kvmanas.com',
+		],
+		methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+		allowedHeaders: [
+			'Origin',
+			'Accept',
+			'Content-Type',
+			'Authorization',
+			'Referer',
+			'User-Agent',
+		],
+		exposedHeaders: ['Authorization'],
+		credentials: true,
+		preflightContinue: false,
+		optionsSuccessStatus: 204,
+	})
+	// app.enableCors({ origin: '*' })
 	// Ensure the server is not already listening
 	if (app.getHttpServer().listening) {
 		console.warn('🚨 Server is already listening on the specified port.')
