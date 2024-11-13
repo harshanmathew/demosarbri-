@@ -31,8 +31,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true 
-          tags: harshanmathew7/internship_project:development
+          tags: harshanmathew7/demo_project:development
 
       - name: Run Docker container
-        run: docker run --rm -p 3000:3000 harshanmathew7/internship_project:development
-
+        run: docker run --rm -p 3000:3000 "harshanmathew7/demo_project:development"
